@@ -1,0 +1,21 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # Buenas prácticas
+    prefer_const_constructors: true
+    prefer_final_fields: true
+    prefer_single_quotes: true
+    avoid_print: true
+    unnecessary_this: true
+
+    # Estilo
+    always_use_package_imports: true
+    sort_child_properties_last: true
+    require_trailing_commas: true
+
+analyzer:
+  errors:
+    # Marca como warning en vez de error
+    avoid_print: warning
+    unnecessary_this: warning
