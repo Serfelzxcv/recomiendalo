@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:recomiendalo/shared/widgets/app_drawer.dart';
+import 'package:recomiendalo/shared/widgets/app_scaffold.dart';
+import 'package:recomiendalo/shared/widgets/loading_overlay.dart';
 import 'package:recomiendalo/features/home/screens/maker_home_screen.dart';
 import 'package:recomiendalo/features/home/screens/taker_home_screen.dart';
-import 'package:recomiendalo/shared/widgets/loading_overlay.dart';
 
-/// Pantalla principal con Drawer y contenido dinámico
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -13,17 +13,16 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  UserMode _mode = UserMode.maker; // valor inicial
+  UserMode _mode = UserMode.employer;
   bool _isLoading = false;
 
   void _toggleMode() async {
     setState(() => _isLoading = true);
-
-    // Pequeña simulación de carga con overlay
     await Future.delayed(const Duration(milliseconds: 450));
-
     setState(() {
-      _mode = _mode == UserMode.maker ? UserMode.taker : UserMode.maker;
+      _mode = _mode == UserMode.employer
+          ? UserMode.colaborator
+          : UserMode.employer;
       _isLoading = false;
     });
   }
@@ -32,9 +31,13 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Scaffold(
+        AppScaffold(
           appBar: AppBar(
-            title: Text(_mode == UserMode.maker ? "Maker" : "Taker"),
+            title: Text(
+              _mode == UserMode.employer
+                  ? "Modo Empleador"
+                  : "Modo Colaborador",
+            ),
           ),
           drawer: AppDrawer(
             mode: _mode,
@@ -42,13 +45,11 @@ class _MainScreenState extends State<MainScreen> {
           ),
           body: AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
-            child: _mode == UserMode.maker
-                ? const MakerHomeScreen(key: ValueKey("maker"))
-                : const TakerHomeScreen(key: ValueKey("taker")),
+            child: _mode == UserMode.employer
+                ? const MakerHomeScreen(key: ValueKey("employer"))
+                : const TakerHomeScreen(key: ValueKey("colaborator")),
           ),
         ),
-
-        // Overlay de carga
         if (_isLoading) const LoadingOverlay(),
       ],
     );

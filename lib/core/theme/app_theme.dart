@@ -9,7 +9,7 @@ class AppTheme {
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF6750A4), // morado profesional
+        seedColor: const Color.fromARGB(255, 17, 146, 103), // Verde turquesa vibrante
       ),
       textTheme: GoogleFonts.interTextTheme(),
     );
