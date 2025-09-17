@@ -22,7 +22,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
 
   String? _category;
   String? _paymentMethod;
-  bool _isRemote = false; // 👈 por defecto presencial
+  bool _isRemote = false; // por defecto presencial
 
   @override
   Widget build(BuildContext context) {
@@ -35,21 +35,21 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             /// Sección: Detalles
             Text("Detalles del trabajo",
                 style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             AppTextField(
               label: 'Título',
               hint: 'Ej: Necesito maestro melaminero',
               controller: _titleController,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
             AppTextField(
               label: 'Descripción',
@@ -57,7 +57,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
               controller: _descriptionController,
               maxLines: 4,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
 
             AppDropdown<String>(
               label: 'Categoría',
@@ -70,19 +70,19 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
                 DropdownMenuItem(value: 'Otros', child: Text('Otros')),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
 
             /// Sección: Ubicación
             Text("Ubicación",
                 style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             AppCheckbox(
               label: 'Trabajo remoto (no requiere ubicación)',
               value: _isRemote,
               onChanged: (val) => setState(() => _isRemote = val ?? false),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             if (!_isRemote) ...[
               AppTextField(
@@ -90,13 +90,13 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
                 hint: 'Ej: San Juan de Lurigancho, Lima',
                 controller: _locationController,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
             ],
 
             /// Sección: Presupuesto
             Text("Presupuesto y pago",
                 style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             AppTextField(
               label: 'Presupuesto estimado (S/)',
@@ -104,7 +104,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
               controller: _budgetController,
               keyboardType: TextInputType.number,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
             AppDropdown<String>(
               label: 'Método de pago',
@@ -117,12 +117,12 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
                 DropdownMenuItem(value: 'Efectivo', child: Text('Efectivo')),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
 
             /// Sección: Extras
             Text("Extras",
                 style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             AppImagePicker(
               label: 'Imágenes de referencia (opcional)',
@@ -133,7 +133,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
                 );
               },
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 40),
 
             PrimaryButton(
               text: 'Publicar trabajo',
