@@ -22,7 +22,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
 
   String? _category;
   String? _paymentMethod;
-  bool _isRemote = false;
+  bool _isRemote = false; // 👈 por defecto presencial
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +39,11 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            /// Sección: Detalles
+            Text("Detalles del trabajo",
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
+
             AppTextField(
               label: 'Título',
               hint: 'Ej: Necesito maestro melaminero',
@@ -52,7 +57,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
               controller: _descriptionController,
               maxLines: 4,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
             AppDropdown<String>(
               label: 'Categoría',
@@ -65,21 +70,33 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
                 DropdownMenuItem(value: 'Otros', child: Text('Otros')),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
-            AppTextField(
-              label: 'Ubicación',
-              hint: 'Ej: San Juan de Lurigancho, Lima',
-              controller: _locationController,
-            ),
-            const SizedBox(height: 8),
+            /// Sección: Ubicación
+            Text("Ubicación",
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
 
             AppCheckbox(
-              label: 'Trabajo remoto / no presencial',
+              label: 'Trabajo remoto (no requiere ubicación)',
               value: _isRemote,
               onChanged: (val) => setState(() => _isRemote = val ?? false),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
+
+            if (!_isRemote) ...[
+              AppTextField(
+                label: 'Ubicación',
+                hint: 'Ej: San Juan de Lurigancho, Lima',
+                controller: _locationController,
+              ),
+              const SizedBox(height: 24),
+            ],
+
+            /// Sección: Presupuesto
+            Text("Presupuesto y pago",
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
 
             AppTextField(
               label: 'Presupuesto estimado (S/)',
@@ -100,18 +117,23 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
                 DropdownMenuItem(value: 'Efectivo', child: Text('Efectivo')),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
+
+            /// Sección: Extras
+            Text("Extras",
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
 
             AppImagePicker(
-              label: 'Imagen de referencia (opcional)',
-              onImageSelected: (file) {
+              label: 'Imágenes de referencia (opcional)',
+              onImagesSelected: (files) {
                 // por ahora solo demo
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Imagen seleccionada')),
+                  SnackBar(content: Text('${files.length} imágenes seleccionadas')),
                 );
               },
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
             PrimaryButton(
               text: 'Publicar trabajo',

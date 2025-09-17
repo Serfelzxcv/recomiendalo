@@ -1,16 +1,15 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AppImagePicker extends StatefulWidget {
   final String label;
-  final void Function(File?) onImageSelected;
+  final void Function(List<File>) onImagesSelected;
 
   const AppImagePicker({
     super.key,
     required this.label,
-    required this.onImageSelected,
+    required this.onImagesSelected,
   });
 
   @override
@@ -18,48 +17,65 @@ class AppImagePicker extends StatefulWidget {
 }
 
 class _AppImagePickerState extends State<AppImagePicker> {
-  File? _image;
+  List<File> _images = [];
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImages() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final pickedFiles = await picker.pickMultiImage();
 
-    if (pickedFile != null) {
+    if (pickedFiles.isNotEmpty) {
       setState(() {
-        _image = File(pickedFile.path);
+        _images = pickedFiles.map((f) => File(f.path)).toList();
       });
-      widget.onImageSelected(_image);
+      widget.onImagesSelected(_images);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.label,
-            style: Theme.of(context).textTheme.titleSmall),
+        Text(widget.label, style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(height: 8),
         InkWell(
-          onTap: _pickImage,
-          borderRadius: BorderRadius.circular(12),
+          onTap: _pickImages,
+          borderRadius: BorderRadius.circular(16),
           child: Container(
-            height: 150,
-            width: double.infinity,
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade400),
-              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(16),
               color: Colors.grey.shade100,
             ),
-            child: _image == null
-                ? const Center(child: Text("Toca para seleccionar una imagen"))
-                : ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.file(
-                      _image!,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    ),
+            height: 150,
+            width: double.infinity,
+            child: _images.isEmpty
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.image_outlined, size: 40, color: colors.primary),
+                      const SizedBox(height: 8),
+                      const Text("Toca para seleccionar imágenes"),
+                    ],
+                  )
+                : ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _images.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 8),
+                    itemBuilder: (_, index) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.file(
+                          _images[index],
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    },
                   ),
           ),
         ),

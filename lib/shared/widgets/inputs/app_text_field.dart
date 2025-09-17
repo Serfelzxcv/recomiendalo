@@ -25,7 +25,6 @@ class AppTextField extends StatelessWidget {
     decoration: InputDecoration(
       labelText: label,
       hintText: hint,
-      prefixIcon: const Icon(Icons.edit_outlined), // 👈 ícono contextual
       filled: true,
       fillColor: Colors.white,
       border: OutlineInputBorder(

@@ -29,6 +29,9 @@ dependencies:
   # Manejo de imágenes
   image_picker: ^1.2.0
 
+  # Drop Down
+  dropdown_button2: ^2.3.9
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -5,6 +5,7 @@ import 'package:recomiendalo/features/home/screens/main_screen.dart';
 import 'package:recomiendalo/features/jobs/screens/job_create_screen.dart';
 
 final GoRouter appRouter = GoRouter(
+  initialLocation: '/login',
   routes: [
     GoRoute(
       path: '/login',
