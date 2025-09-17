@@ -26,6 +26,9 @@ dependencies:
   # Íconos SVG
   flutter_svg: ^2.2.1
 
+  # Manejo de imágenes
+  image_picker: ^1.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
