@@ -151,6 +151,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
 
               AppDropdown<String>(
                 label: 'Categoría',
+                hint: 'Selecciona una categoría', // 👈
                 value: _category,
                 onChanged: (val) => setState(() => _category = val),
                 items: const [
@@ -160,6 +161,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
                   DropdownMenuItem(value: 'Otros', child: Text('Otros')),
                 ],
               ),
+
               const SizedBox(height: 28),
 
               Text('Ubicación', style: t.titleMedium),
