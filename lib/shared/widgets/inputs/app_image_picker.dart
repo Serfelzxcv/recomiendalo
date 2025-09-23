@@ -17,67 +17,93 @@ class AppImagePicker extends StatefulWidget {
 }
 
 class _AppImagePickerState extends State<AppImagePicker> {
-  List<File> _images = [];
+  final List<File> _files = [];
 
   Future<void> _pickImages() async {
-    final picker = ImagePicker();
-    final pickedFiles = await picker.pickMultiImage();
+    final ImagePicker picker = ImagePicker();
+    final List<XFile> picked = await picker.pickMultiImage();
 
-    if (pickedFiles.isNotEmpty) {
+    if (picked.isNotEmpty) {
       setState(() {
-        _images = pickedFiles.map((f) => File(f.path)).toList();
+        final newFiles = picked.map((x) => File(x.path)).toList();
+        _files.addAll(newFiles);
+        widget.onImagesSelected(_files);
       });
-      widget.onImagesSelected(_images);
     }
+  }
+
+  void _removeImage(File file) {
+    setState(() {
+      _files.remove(file);
+      widget.onImagesSelected(_files);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final t = Theme.of(context).textTheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.label, style: Theme.of(context).textTheme.titleSmall),
+        Text('Imágenes', style: t.titleMedium),
+        const SizedBox(height: 6),
+        Text(widget.label, style: t.labelSmall?.copyWith(color: Colors.grey[600])),
         const SizedBox(height: 8),
-        InkWell(
-          onTap: _pickImages,
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade300),
-              borderRadius: BorderRadius.circular(16),
-              color: Colors.grey.shade100,
-            ),
-            height: 150,
-            width: double.infinity,
-            child: _images.isEmpty
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.image_outlined, size: 40, color: colors.primary),
-                      const SizedBox(height: 8),
-                      const Text("Toca para seleccionar imágenes"),
-                    ],
-                  )
-                : ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _images.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 8),
-                    itemBuilder: (_, index) {
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.file(
-                          _images[index],
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        ),
-                      );
-                    },
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            // Miniaturas
+            ..._files.map((file) {
+              return Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.file(
+                      file,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-          ),
+                  Positioned(
+                    top: 2,
+                    right: 2,
+                    child: GestureDetector(
+                      onTap: () => _removeImage(file),
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.black54,
+                        ),
+                        padding: const EdgeInsets.all(2),
+                        child: const Icon(
+                          Icons.close,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              );
+            }),
+            // Botón +
+            GestureDetector(
+              onTap: _pickImages,
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.grey.shade100,
+                ),
+                child: const Icon(Icons.add, size: 30, color: Colors.grey),
+              ),
+            ),
+          ],
         ),
       ],
     );

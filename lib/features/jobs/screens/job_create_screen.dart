@@ -1,18 +1,16 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:recomiendalo/features/auth/screens/secondary_button.dart';
 
+import 'package:recomiendalo/features/auth/screens/secondary_button.dart';
 import 'package:recomiendalo/shared/widgets/app_scaffold.dart';
 import 'package:recomiendalo/shared/widgets/primary_button.dart';
-
 import 'package:recomiendalo/shared/widgets/inputs/app_text_field.dart';
 import 'package:recomiendalo/shared/widgets/inputs/app_dropdown.dart';
 import 'package:recomiendalo/shared/widgets/inputs/app_checkbox.dart';
 import 'package:recomiendalo/shared/widgets/inputs/app_image_picker.dart';
-
-import 'package:recomiendalo/shared/widgets/app_drawer.dart'; // para el Drawer y UserMode
+import 'package:recomiendalo/shared/widgets/app_drawer.dart';
+import 'package:recomiendalo/shared/widgets/inputs/app_tags_input.dart'; // 👈 nuevo import
 
 class JobCreateScreen extends StatefulWidget {
   const JobCreateScreen({super.key});
@@ -22,10 +20,8 @@ class JobCreateScreen extends StatefulWidget {
 }
 
 class _JobCreateScreenState extends State<JobCreateScreen> {
-  // Step control
   int _step = 0;
 
-  // Controllers / state
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _budgetController = TextEditingController();
@@ -33,10 +29,10 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
 
   String? _category;
   String? _paymentMethod;
-  bool _isRemote = false; // por defecto PRESENCIAL (se muestra ubicación)
+  bool _isRemote = false;
   List<File> _images = [];
+  List<String> _tags = []; // 👈 etiquetas
 
-  // Helpers de step
   void _nextStep() {
     if (_step < 2) setState(() => _step++);
   }
@@ -50,12 +46,10 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
     final t = Theme.of(context).textTheme;
 
     return AppScaffold(
-      // ✅ Al pasar drawer, Flutter muestra el icono hamburguesa automáticamente
       drawer: AppDrawer(
         mode: UserMode.employer,
-        // En este MVP, si quieren cambiar de modo desde aquí, los mandamos a /home
         onToggleMode: () {
-          Navigator.of(context).pop(); // cierra drawer
+          Navigator.of(context).pop();
           context.go('/home');
         },
       ),
@@ -66,12 +60,9 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
           children: [
-            // Header de progreso
             _StepHeader(current: _step, total: 3),
-
             const SizedBox(height: 16),
 
-            // Contenido por paso
             Expanded(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 250),
@@ -81,7 +72,6 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
 
             const SizedBox(height: 12),
 
-            // Botonera inferior
             Row(
               children: [
                 if (_step > 0)
@@ -99,7 +89,6 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
                       if (_step < 2) {
                         _nextStep();
                       } else {
-                        // Publicar (demo)
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
@@ -120,12 +109,9 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
     );
   }
 
-  // ---------- CONTENIDOS POR PASO ----------
-
   Widget _buildStepContent(int step, TextTheme t) {
     switch (step) {
-      // PASO 1: Detalles + Ubicación
-      case 0:
+      case 0: // PASO 1
         return SingleChildScrollView(
           key: const ValueKey('step1'),
           child: Column(
@@ -151,7 +137,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
 
               AppDropdown<String>(
                 label: 'Categoría',
-                hint: 'Selecciona una categoría', // 👈
+                hint: 'Selecciona una categoría',
                 value: _category,
                 onChanged: (val) => setState(() => _category = val),
                 items: const [
@@ -161,7 +147,13 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
                   DropdownMenuItem(value: 'Otros', child: Text('Otros')),
                 ],
               ),
+              const SizedBox(height: 20),
 
+              AppTagsInput(
+                label: 'Etiquetas del trabajo',
+                initialTags: const [],
+                onChanged: (tags) => setState(() => _tags = tags),
+              ),
               const SizedBox(height: 28),
 
               Text('Ubicación', style: t.titleMedium),
@@ -190,8 +182,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
           ),
         );
 
-      // PASO 2: Presupuesto + Pago + Imágenes
-      case 1:
+      case 1: // PASO 2
         return SingleChildScrollView(
           key: const ValueKey('step2'),
           child: Column(
@@ -221,24 +212,17 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
               ),
               const SizedBox(height: 28),
 
-              Text('Imágenes', style: t.titleMedium),
-              const SizedBox(height: 12),
-
               AppImagePicker(
                 label: 'Imágenes de referencia (opcional)',
                 onImagesSelected: (files) {
                   setState(() => _images = files);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${files.length} imágenes seleccionadas')),
-                  );
                 },
               ),
             ],
           ),
         );
 
-      // PASO 3: Resumen (preview)
-      default:
+      default: // PASO 3
         return SingleChildScrollView(
           key: const ValueKey('step3'),
           child: Column(
@@ -249,6 +233,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
               _SummaryItem(label: 'Título', value: _titleController.text),
               _SummaryItem(label: 'Descripción', value: _descriptionController.text),
               _SummaryItem(label: 'Categoría', value: _category ?? '—'),
+              _SummaryItem(label: 'Etiquetas', value: _tags.join(', ')),
               _SummaryItem(
                 label: 'Modalidad',
                 value: _isRemote ? 'Remoto' : 'Presencial',
@@ -265,10 +250,27 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
                 label: 'Método de pago',
                 value: _paymentMethod ?? '—',
               ),
-              _SummaryItem(
-                label: 'Imágenes',
-                value: _images.isEmpty ? 'Sin imágenes' : '${_images.length} seleccionadas',
-              ),
+              const SizedBox(height: 12),
+              Text('Imágenes', style: t.labelSmall?.copyWith(color: Colors.grey[600])),
+              const SizedBox(height: 6),
+              if (_images.isEmpty)
+                Text('Sin imágenes', style: t.bodyMedium)
+              else
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: _images.map((file) {
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(
+                        file,
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                      ),
+                    );
+                  }).toList(),
+                ),
               const SizedBox(height: 8),
               Text(
                 'Así lo verá el colaborador cuando entre al detalle del trabajo.',
@@ -281,9 +283,9 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
   }
 }
 
-/// Header simple con 3 pasos
+/// Header de pasos
 class _StepHeader extends StatelessWidget {
-  final int current; // 0..2
+  final int current;
   final int total;
 
   const _StepHeader({required this.current, required this.total});
@@ -332,7 +334,7 @@ class _StepHeader extends StatelessWidget {
   }
 }
 
-/// Item de resumen con etiqueta pequeña
+/// Item resumen
 class _SummaryItem extends StatelessWidget {
   final String label;
   final String value;
@@ -353,8 +355,7 @@ class _SummaryItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,
-              style: t.labelSmall?.copyWith(color: Colors.grey[600])),
+          Text(label, style: t.labelSmall?.copyWith(color: Colors.grey[600])),
           const SizedBox(height: 4),
           Text(value.isEmpty ? '—' : value, style: t.bodyMedium),
         ],
