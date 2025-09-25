@@ -50,10 +50,8 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
     final t = Theme.of(context).textTheme;
 
     return AppScaffold(
-      // ✅ Al pasar drawer, Flutter muestra el icono hamburguesa automáticamente
       drawer: AppDrawer(
         mode: UserMode.employer,
-        // En este MVP, si quieren cambiar de modo desde aquí, los mandamos a /home
         onToggleMode: () {
           Navigator.of(context).pop(); // cierra drawer
           context.go('/home');
