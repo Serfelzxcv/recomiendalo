@@ -49,22 +49,20 @@ class AppDropdown<T> extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
-                  color: Colors.black, // 👈 igual al borde del TextField
-                  width: 1,                  // 👈 grosor consistente
+                  color: colors.outline.withOpacity(0.5), // 👈 gris clarito
+                  width: 1,
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
             dropdownStyleData: DropdownStyleData(
               maxHeight: 280,
-              width: 260,
               decoration: BoxDecoration(
                 color: Colors.white,
-                border: Border.all(
-                  color: Colors.black, // 👈 mismo borde también en menú
-                  width: 1,
-                ),
                 borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: colors.outline.withOpacity(0.5), // 👈 mismo gris clarito
+                ),
               ),
             ),
             menuItemStyleData: const MenuItemStyleData(

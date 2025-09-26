@@ -19,6 +19,7 @@ class AppTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,10 +33,16 @@ class AppTextField extends StatelessWidget {
           controller: controller,
           maxLines: maxLines,
           keyboardType: keyboardType,
+          style: const TextStyle(
+            color: Colors.black, // 👈 texto ingresado en negro
+          ),
           decoration: InputDecoration(
             hintText: hint,
+            hintStyle: TextStyle(
+              color: Colors.grey.shade500, // 👈 hint gris clarito
+            ),
             isDense: true, // 🔹 altura intermedia
-            filled: true,  // 🔹 activa fondo
+            filled: true,
             fillColor: Colors.white, // 🔹 fondo blanco
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 14,
@@ -43,14 +50,16 @@ class AppTextField extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: colors.outline),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: colors.outline.withOpacity(0.5)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.primary,
+                color: colors.primary,
                 width: 1.5,
               ),
             ),
