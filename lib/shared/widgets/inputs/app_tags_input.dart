@@ -26,11 +26,13 @@ class _AppTagsInputState extends State<AppTagsInput> {
     _tags = List.from(widget.initialTags);
   }
 
-  void _addTag(String tag) {
-    if (tag.trim().isEmpty) return;
+  void _addTag() {
+    final tag = _controller.text.trim();
+    if (tag.isEmpty) return;
     if (_tags.contains(tag)) return;
+
     setState(() {
-      _tags.add(tag.trim());
+      _tags.add(tag);
       _controller.clear();
       widget.onChanged(_tags);
     });
@@ -53,42 +55,52 @@ class _AppTagsInputState extends State<AppTagsInput> {
       children: [
         Text(widget.label, style: t.labelMedium),
         const SizedBox(height: 6),
+
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           decoration: BoxDecoration(
             border: Border.all(color: colors.outline.withOpacity(0.5)),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
+          child: Row(
             children: [
-              // Chips existentes
-              ..._tags.map((tag) {
-                return Chip(
-                  label: Text(tag),
-                  backgroundColor: colors.surfaceVariant,
-                  deleteIcon: const Icon(Icons.close, size: 18),
-                  onDeleted: () => _removeTag(tag),
-                );
-              }),
-              // Input + botón
-              SizedBox(
-                width: 120,
-                child: TextField(
-                  controller: _controller,
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    border: InputBorder.none,
-                    hintText: 'Agregar...',
-                  ),
-                  onSubmitted: _addTag,
+              // Chips ocupan todo el espacio disponible
+              Expanded(
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    ..._tags.map((tag) {
+                      return Chip(
+                        label: Text(tag),
+                        backgroundColor: colors.surfaceVariant,
+                        deleteIcon: const Icon(Icons.close, size: 18),
+                        onDeleted: () => _removeTag(tag),
+                      );
+                    }),
+                    // TextField inline para nueva etiqueta
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 120),
+                      child: TextField(
+                        controller: _controller,
+                        decoration: InputDecoration(
+                          hintText: 'Agregar...',
+                          hintStyle: TextStyle(color: Colors.grey.shade500),
+                          border: InputBorder.none,
+                          isDense: true,
+                        ),
+                        onSubmitted: (_) => _addTag(),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+
+              // Botón + fijo al final
               IconButton(
                 icon: const Icon(Icons.add_circle),
                 color: colors.primary,
-                onPressed: () => _addTag(_controller.text),
+                onPressed: _addTag,
               ),
             ],
           ),

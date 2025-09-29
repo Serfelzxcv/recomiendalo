@@ -85,7 +85,7 @@ class AppDrawer extends StatelessWidget {
                     context,
                     icon: Icons.work_outline,
                     title: 'Trabajos publicados',
-                    route: '/home',
+                    route: '/jobs/list',
                     badgeCount: 2,
                   ),
                   _buildTile(

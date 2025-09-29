@@ -3,6 +3,7 @@ import 'package:recomiendalo/features/auth/screens/login_screen.dart';
 import 'package:recomiendalo/features/auth/screens/register_screen.dart';
 import 'package:recomiendalo/features/home/screens/main_screen.dart';
 import 'package:recomiendalo/features/jobs/screens/job_create_screen.dart';
+import 'package:recomiendalo/features/jobs/screens/job_list_screen.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/login',
@@ -18,6 +19,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/home',
       builder: (context, state) => const MainScreen(),
+    ),
+      GoRoute(
+      path: '/jobs/list',
+      builder: (context, state) => const JobListScreen(),
     ),
     GoRoute(
       path: '/jobs/create',
