@@ -2,82 +2,165 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// Tema centralizado de la aplicación.
-/// Aquí configuramos colores, tipografía y estilos globales.
+/// Paleta: Negro (#000000), Blanco (#FFFFFF), Turquesa (#27C3AE)
 class AppTheme {
-  /// Tema claro principal de la app
+  static const primaryColor = Color(0xFF27C3AE);
+  static const black = Colors.black;
+  static const white = Colors.white;
+
+  /// Tema claro
   static ThemeData light() {
     final base = ThemeData(
       useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color.fromARGB(255, 17, 146, 103), // Verde turquesa vibrante
+      colorScheme: const ColorScheme(
+        brightness: Brightness.light,
+        primary: primaryColor,
+        onPrimary: white,
+        secondary: primaryColor,
+        onSecondary: white,
+        error: Colors.red,
+        onError: white,
+        background: white,
+        onBackground: black,
+        surface: white,
+        onSurface: black,
       ),
       textTheme: GoogleFonts.interTextTheme(),
     );
 
-  return base.copyWith(
-    appBarTheme: AppBarTheme(
-      backgroundColor: base.colorScheme.primary,
-      foregroundColor: base.colorScheme.onPrimary,
-      centerTitle: true,
-      titleTextStyle: base.textTheme.titleLarge?.copyWith(
-        fontWeight: FontWeight.bold,
-        color: base.colorScheme.onPrimary,
+    return base.copyWith(
+      /// AppBar blanco con texto negro (minimalista)
+      appBarTheme: const AppBarTheme(
+        backgroundColor: white,
+        foregroundColor: black,
+        elevation: 0,
+        centerTitle: true,
       ),
-    ),
-    // 👇 Aquí el cambio: CardThemeData en lugar de CardTheme
-    cardTheme: CardThemeData(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      margin: const EdgeInsets.all(8),
-    ),
-    listTileTheme: ListTileThemeData(
-      iconColor: base.colorScheme.primary,
-      textColor: base.colorScheme.onSurface,
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      filled: true,
-      fillColor: base.colorScheme.surfaceVariant,
-    ),
-    filledButtonTheme: FilledButtonThemeData(
-      style: FilledButton.styleFrom(
+
+      /// Tarjetas limpias con bordes suaves
+      cardTheme: CardThemeData(
+        elevation: 0,
+        color: white,
+        margin: const EdgeInsets.all(8),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: Colors.grey[200]!),
         ),
-        textStyle: const TextStyle(fontWeight: FontWeight.bold),
-        minimumSize: const Size.fromHeight(48),
       ),
-    ),
-    outlinedButtonTheme: OutlinedButtonThemeData(
-      style: OutlinedButton.styleFrom(
+
+      /// ListTiles: texto negro, iconos turquesa
+      listTileTheme: const ListTileThemeData(
+        iconColor: primaryColor,
+        textColor: black,
+      ),
+
+      /// Inputs estilo minimal
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: white,
+        hintStyle: TextStyle(color: Colors.grey[500]),
+        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: primaryColor, width: 2),
+        ),
+      ),
+
+      /// Botón principal turquesa (bien visible)
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: primaryColor,
+          foregroundColor: white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: const TextStyle(fontWeight: FontWeight.bold),
+          minimumSize: const Size.fromHeight(48),
+        ),
+      ),
+
+      /// Botón secundario (outline negro)
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: black, width: 1.2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          minimumSize: const Size.fromHeight(48),
+          foregroundColor: black,
+          textStyle: const TextStyle(fontWeight: FontWeight.w500),
+        ),
+      ),
+
+      /// Drawer blanco con esquinas redondeadas
+      drawerTheme: const DrawerThemeData(
+        backgroundColor: white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        side: BorderSide(color: base.colorScheme.primary),
-        minimumSize: const Size.fromHeight(48),
-      ),
-    ),
-    drawerTheme: DrawerThemeData(
-      backgroundColor: base.colorScheme.background,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(24),
-          bottomRight: Radius.circular(24),
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(24),
+            bottomRight: Radius.circular(24),
+          ),
         ),
       ),
-    ),
-  );
+    );
   }
 
-  /// Tema oscuro preparado (aún no lo usamos)
+  /// Tema oscuro
   static ThemeData dark() {
     final base = ThemeData.dark(useMaterial3: true);
     return base.copyWith(
+      colorScheme: const ColorScheme.dark(
+        primary: primaryColor,
+        onPrimary: black,
+        secondary: primaryColor,
+        onSecondary: black,
+        background: black,
+        onBackground: white,
+        surface: Color(0xFF121212),
+        onSurface: white,
+        error: Colors.red,
+        onError: white,
+      ),
       textTheme: GoogleFonts.interTextTheme(base.textTheme),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: black,
+        foregroundColor: white,
+        centerTitle: true,
+        elevation: 0,
+      ),
+      cardTheme: CardThemeData(
+        elevation: 0,
+        margin: const EdgeInsets.all(8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: Colors.white.withOpacity(0.1)),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFF1E1E1E),
+        hintStyle: TextStyle(color: Colors.grey[500]),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.12)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.12)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: primaryColor, width: 2),
+        ),
+      ),
     );
   }
 }

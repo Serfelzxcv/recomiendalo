@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
-/// Wrapper que asegura que todas las pantallas
-/// estén dentro de un Scaffold + SafeArea.
-/// 
-/// Así evitamos repetir código en cada pantalla.
 class AppScaffold extends StatelessWidget {
   final PreferredSizeWidget? appBar;
   final Widget body;
   final Widget? drawer;
   final Widget? floatingActionButton;
   final Color? backgroundColor;
+  final bool safeAreaTop;
+  final bool safeAreaBottom;
 
   const AppScaffold({
     super.key,
@@ -18,6 +16,8 @@ class AppScaffold extends StatelessWidget {
     this.drawer,
     this.floatingActionButton,
     this.backgroundColor,
+    this.safeAreaTop = true,
+    this.safeAreaBottom = true,
   });
 
   @override
@@ -27,7 +27,11 @@ class AppScaffold extends StatelessWidget {
       drawer: drawer,
       floatingActionButton: floatingActionButton,
       backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.background,
-      body: SafeArea(child: body),
+      body: SafeArea(
+        top: safeAreaTop,
+        bottom: safeAreaBottom,
+        child: body,
+      ),
     );
   }
 }

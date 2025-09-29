@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:recomiendalo/features/jobs/services/job_service.dart';
 import 'package:recomiendalo/features/jobs/models/job_model.dart';
 import 'package:recomiendalo/shared/widgets/app_scaffold.dart';
+import 'package:recomiendalo/shared/widgets/app_drawer.dart';
 
 class JobListScreen extends StatefulWidget {
   const JobListScreen({super.key});
@@ -24,7 +25,16 @@ class _JobListScreenState extends State<JobListScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      appBar: AppBar(title: const Text("Trabajos publicados")),
+      drawer: AppDrawer(
+        mode: UserMode.employer, // 👈 aquí fijo, luego se puede volver dinámico
+        onToggleMode: () {
+          Navigator.of(context).pop(); // cierra el drawer
+          // opcional: redirigir según el modo
+        },
+      ),
+      appBar: AppBar(
+        title: const Text("Trabajos publicados"),
+      ),
       body: FutureBuilder<List<JobModel>>(
         future: _jobsFuture,
         builder: (context, snapshot) {

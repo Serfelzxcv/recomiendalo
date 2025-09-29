@@ -10,7 +10,7 @@ import 'package:recomiendalo/shared/widgets/inputs/app_dropdown.dart';
 import 'package:recomiendalo/shared/widgets/inputs/app_checkbox.dart';
 import 'package:recomiendalo/shared/widgets/inputs/app_image_picker.dart';
 import 'package:recomiendalo/shared/widgets/app_drawer.dart';
-import 'package:recomiendalo/shared/widgets/inputs/app_tags_input.dart'; // 👈 nuevo import
+import 'package:recomiendalo/shared/widgets/inputs/app_tags_input.dart';
 
 class JobCreateScreen extends StatefulWidget {
   const JobCreateScreen({super.key});
@@ -31,7 +31,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
   String? _paymentMethod;
   bool _isRemote = false;
   List<File> _images = [];
-  List<String> _tags = []; // 👈 etiquetas
+  List<String> _tags = [];
 
   void _nextStep() {
     if (_step < 2) setState(() => _step++);
@@ -61,16 +61,18 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
         child: Column(
           children: [
             _StepHeader(current: _step, total: 3),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
             Expanded(
               child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
+                duration: const Duration(milliseconds: 300),
+                switchInCurve: Curves.easeInOut,
+                switchOutCurve: Curves.easeInOut,
                 child: _buildStepContent(_step, t),
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             Row(
               children: [
@@ -114,11 +116,12 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
       case 0: // PASO 1
         return SingleChildScrollView(
           key: const ValueKey('step1'),
+          padding: const EdgeInsets.only(bottom: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Detalles del trabajo', style: t.titleMedium),
-              const SizedBox(height: 16),
+              Text('Detalles del trabajo', style: t.titleLarge),
+              const SizedBox(height: 20),
 
               AppTextField(
                 label: 'Título',
@@ -154,30 +157,6 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
                 initialTags: const [],
                 onChanged: (tags) => setState(() => _tags = tags),
               ),
-              const SizedBox(height: 28),
-
-              Text('Ubicación', style: t.titleMedium),
-              const SizedBox(height: 12),
-
-              AppCheckbox(
-                label: 'Trabajo remoto (no requiere ubicación)',
-                value: _isRemote,
-                onChanged: (val) => setState(() => _isRemote = val ?? false),
-              ),
-              const SizedBox(height: 12),
-
-              if (!_isRemote) ...[
-                AppTextField(
-                  label: 'Ubicación',
-                  hint: 'Ej: San Juan de Lurigancho, Lima',
-                  controller: _locationController,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Indica distrito/ciudad para que el colaborador evalúe tiempos y costos.',
-                  style: t.bodySmall?.copyWith(color: Colors.grey[600]),
-                ),
-              ],
             ],
           ),
         );
@@ -185,11 +164,12 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
       case 1: // PASO 2
         return SingleChildScrollView(
           key: const ValueKey('step2'),
+          padding: const EdgeInsets.only(bottom: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Presupuesto y pago', style: t.titleMedium),
-              const SizedBox(height: 12),
+              Text('Presupuesto, pago y ubicación', style: t.titleLarge),
+              const SizedBox(height: 20),
 
               AppTextField(
                 label: 'Presupuesto estimado (S/)',
@@ -212,6 +192,30 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
               ),
               const SizedBox(height: 28),
 
+              Text('Ubicación', style: t.titleLarge),
+              const SizedBox(height: 12),
+
+              AppCheckbox(
+                label: 'Trabajo remoto (no requiere ubicación)',
+                value: _isRemote,
+                onChanged: (val) => setState(() => _isRemote = val ?? false),
+              ),
+              const SizedBox(height: 12),
+
+              if (!_isRemote) ...[
+                AppTextField(
+                  label: 'Ubicación',
+                  hint: 'Ej: San Juan de Lurigancho, Lima',
+                  controller: _locationController,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Indica distrito/ciudad para que el colaborador evalúe tiempos y costos.',
+                  style: t.bodySmall?.copyWith(color: Colors.grey[600]),
+                ),
+              ],
+              const SizedBox(height: 28),
+
               AppImagePicker(
                 label: 'Imágenes de referencia (opcional)',
                 onImagesSelected: (files) {
@@ -225,11 +229,13 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
       default: // PASO 3
         return SingleChildScrollView(
           key: const ValueKey('step3'),
+          padding: const EdgeInsets.only(bottom: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Resumen', style: t.titleMedium),
-              const SizedBox(height: 12),
+              Text('Resumen', style: t.titleLarge),
+              const SizedBox(height: 16),
+
               _SummaryItem(label: 'Título', value: _titleController.text),
               _SummaryItem(label: 'Descripción', value: _descriptionController.text),
               _SummaryItem(label: 'Categoría', value: _category ?? '—'),
@@ -250,9 +256,11 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
                 label: 'Método de pago',
                 value: _paymentMethod ?? '—',
               ),
-              const SizedBox(height: 12),
-              Text('Imágenes', style: t.labelSmall?.copyWith(color: Colors.grey[600])),
-              const SizedBox(height: 6),
+
+              const SizedBox(height: 20),
+              Text('Imágenes', style: t.titleMedium?.copyWith(color: Colors.grey[700])),
+              const SizedBox(height: 8),
+
               if (_images.isEmpty)
                 Text('Sin imágenes', style: t.bodyMedium)
               else
@@ -271,7 +279,8 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
                     );
                   }).toList(),
                 ),
-              const SizedBox(height: 8),
+
+              const SizedBox(height: 12),
               Text(
                 'Así lo verá el colaborador cuando entre al detalle del trabajo.',
                 style: t.bodySmall?.copyWith(color: Colors.grey[600]),
@@ -298,16 +307,16 @@ class _StepHeader extends StatelessWidget {
       return Column(
         children: [
           CircleAvatar(
-            radius: 12,
-            backgroundColor: active ? colors.primary : colors.surfaceVariant,
+            radius: 14,
+            backgroundColor: active ? colors.primary : Colors.grey[300],
             child: Icon(
               active ? Icons.check : Icons.circle,
               size: active ? 14 : 8,
-              color: active ? colors.onPrimary : Colors.grey,
+              color: active ? colors.onPrimary : Colors.grey[600],
             ),
           ),
           const SizedBox(height: 4),
-          Text(text, style: Theme.of(context).textTheme.labelSmall),
+          Text(text, style: Theme.of(context).textTheme.labelMedium),
         ],
       );
     }
@@ -317,7 +326,7 @@ class _StepHeader extends StatelessWidget {
         child: Container(
           height: 2,
           margin: const EdgeInsets.symmetric(horizontal: 8),
-          color: filled ? colors.primary : colors.surfaceVariant,
+          color: filled ? colors.primary : Colors.grey[300],
         ),
       );
     }
@@ -344,18 +353,23 @@ class _SummaryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
+    final colors = Theme.of(context).colorScheme;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey.shade200),
+        color: colors.surface,
+        border: Border.all(color: Colors.grey[300]!),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: t.labelSmall?.copyWith(color: Colors.grey[600])),
+          Text(label,
+              style: t.labelMedium?.copyWith(
+                color: Colors.grey[600],
+              )),
           const SizedBox(height: 4),
           Text(value.isEmpty ? '—' : value, style: t.bodyMedium),
         ],
