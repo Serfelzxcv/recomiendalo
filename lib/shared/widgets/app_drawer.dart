@@ -22,7 +22,7 @@ class AppDrawer extends StatelessWidget {
       child: SafeArea(
         child: Column(
           children: [
-            // 🔹 Header más limpio
+            // 🔹 Header minimalista con acento turquesa
             Container(
               padding: const EdgeInsets.all(16),
               color: colors.surface,
@@ -30,7 +30,7 @@ class AppDrawer extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundColor: colors.primary.withOpacity(0.1),
+                    backgroundColor: colors.primary.withOpacity(0.15), // 👈 toque turquesa
                     child: const Icon(Icons.person, size: 32, color: Colors.black),
                   ),
                   const SizedBox(width: 12),
@@ -47,17 +47,25 @@ class AppDrawer extends StatelessWidget {
                             style: textTheme.bodySmall?.copyWith(
                               color: Colors.grey[600],
                             )),
-                        const SizedBox(height: 6),
-                        Chip(
-                          label: Text(
+                        const SizedBox(height: 8),
+
+                        // 🔹 Estado con borde turquesa sutil
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: colors.primary),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
                             mode == UserMode.employer
                                 ? "Modo Empleador"
                                 : "Modo Colaborador",
-                            style: const TextStyle(color: Colors.white),
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colors.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                          backgroundColor: colors.primary,
-                          visualDensity: VisualDensity.compact,
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                       ],
                     ),
@@ -159,18 +167,26 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
 
-            // 🔹 Botón fijo abajo
+            // 🔹 Botón fijo abajo (negro sólido)
             SafeArea(
               minimum: const EdgeInsets.all(16),
               child: SizedBox(
                 width: double.infinity,
                 height: 48,
-                child: FilledButton(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   onPressed: onToggleMode,
                   child: Text(
                     mode == UserMode.employer
                         ? "Cambiar a modo Colaborador"
                         : "Cambiar a modo Empleador",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -196,7 +212,7 @@ class AppDrawer extends StatelessWidget {
       leading: Stack(
         clipBehavior: Clip.none,
         children: [
-          Icon(icon, color: Colors.black87), // 👈 Negro por defecto
+          Icon(icon, color: Colors.black87),
           if (badgeCount != null && badgeCount > 0)
             Positioned(
               right: -6,
@@ -215,7 +231,8 @@ class AppDrawer extends StatelessWidget {
             ),
         ],
       ),
-      title: Text(title, style: textTheme.bodyMedium?.copyWith(color: Colors.black87)),
+      title: Text(title,
+          style: textTheme.bodyMedium?.copyWith(color: Colors.black87)),
       onTap: () => context.go(route),
     );
   }

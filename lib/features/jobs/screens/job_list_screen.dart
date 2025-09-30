@@ -1,9 +1,9 @@
-// lib/features/jobs/screens/job_list_screen.dart
 import 'package:flutter/material.dart';
 import 'package:recomiendalo/features/jobs/services/job_service.dart';
 import 'package:recomiendalo/features/jobs/models/job_model.dart';
 import 'package:recomiendalo/shared/widgets/app_scaffold.dart';
 import 'package:recomiendalo/shared/widgets/app_drawer.dart';
+import 'package:recomiendalo/features/jobs/widgets/job_card_maker.dart';
 
 class JobListScreen extends StatefulWidget {
   const JobListScreen({super.key});
@@ -26,11 +26,8 @@ class _JobListScreenState extends State<JobListScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
       drawer: AppDrawer(
-        mode: UserMode.employer, // 👈 aquí fijo, luego se puede volver dinámico
-        onToggleMode: () {
-          Navigator.of(context).pop(); // cierra el drawer
-          // opcional: redirigir según el modo
-        },
+        mode: UserMode.employer,
+        onToggleMode: () => Navigator.of(context).pop(),
       ),
       appBar: AppBar(
         title: const Text("Trabajos publicados"),
@@ -46,26 +43,16 @@ class _JobListScreenState extends State<JobListScreen> {
           }
 
           final jobs = snapshot.data!;
+
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: jobs.length,
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, i) {
               final job = jobs[i];
-              return Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ListTile(
-                  title: Text(job.title),
-                  subtitle: Text(job.description),
-                  trailing: job.budget != null
-                      ? Text("S/ ${job.budget}")
-                      : const Text("A convenir"),
-                  onTap: () {
-                    // luego podemos llevar a un detalle
-                  },
-                ),
+              return JobCardMaker(
+                job: job,
+                messageCount: i == 0 ? 6 : 0, // 👈 el primero con mensajes
               );
             },
           );
