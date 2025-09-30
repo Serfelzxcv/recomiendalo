@@ -4,6 +4,7 @@ import 'package:recomiendalo/features/auth/screens/register_screen.dart';
 import 'package:recomiendalo/features/home/screens/main_screen.dart';
 import 'package:recomiendalo/features/jobs/screens/job_create_screen.dart';
 import 'package:recomiendalo/features/jobs/screens/job_list_screen.dart';
+import 'package:recomiendalo/features/references/screens/reference_list_screen.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/login',
@@ -28,5 +29,15 @@ final GoRouter appRouter = GoRouter(
       path: '/jobs/create',
       builder: (context, state) => const JobCreateScreen(),
     ),
+
+        GoRoute(
+      path: '/reviews/employer',
+      builder: (context, state) => const ReferenceListScreen(),
+    ),
+    GoRoute(
+      path: '/reviews/colaborator',
+      builder: (context, state) => const ReferenceListScreen(),
+    ),
+
   ],
 );

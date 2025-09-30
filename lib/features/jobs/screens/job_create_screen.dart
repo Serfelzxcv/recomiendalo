@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:recomiendalo/features/auth/screens/secondary_button.dart';
 import 'package:recomiendalo/shared/widgets/app_scaffold.dart';
 import 'package:recomiendalo/shared/widgets/primary_button.dart';
 import 'package:recomiendalo/shared/widgets/inputs/app_text_field.dart';
@@ -44,6 +43,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
+    final colors = Theme.of(context).colorScheme;
 
     return AppScaffold(
       drawer: AppDrawer(
@@ -78,29 +78,40 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
               children: [
                 if (_step > 0)
                   Expanded(
-                    child: SecondaryButton(
+                    child: PrimaryButton(
                       text: 'Atrás',
                       onPressed: _prevStep,
                     ),
                   ),
                 if (_step > 0) const SizedBox(width: 12),
                 Expanded(
-                  child: PrimaryButton(
-                    text: _step < 2 ? 'Siguiente' : 'Publicar',
-                    onPressed: () {
-                      if (_step < 2) {
-                        _nextStep();
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Trabajo publicado: ${_titleController.text}',
+                  child: SizedBox(
+                    height: 48,
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      onPressed: () {
+                        if (_step < 2) {
+                          _nextStep();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Trabajo publicado: ${_titleController.text}',
+                              ),
                             ),
-                          ),
-                        );
-                        context.pop();
-                      }
-                    },
+                          );
+                          context.pop();
+                        }
+                      },
+                      child: Text(_step < 2 ? 'Siguiente' : 'Publicar'),
+                    ),
                   ),
                 ),
               ],

@@ -1,77 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 
 class AppDropdown<T> extends StatelessWidget {
   final String label;
-  final List<DropdownMenuItem<T>> items;
-  final T? value;
-  final void Function(T?) onChanged;
   final String? hint;
+  final T? value;
+  final List<DropdownMenuItem<T>> items;
+  final ValueChanged<T?> onChanged;
 
   const AppDropdown({
     super.key,
     required this.label,
+    this.hint,
+    this.value,
     required this.items,
     required this.onChanged,
-    this.value,
-    this.hint,
   });
 
   @override
   Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
     final colors = Theme.of(context).colorScheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: t.labelMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            color: Colors.grey.shade700,
-          ),
+    return DropdownButtonFormField<T>(
+      value: value,
+      items: items,
+      onChanged: onChanged,
+      style: const TextStyle(fontSize: 14), // 👈 texto más chico
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        labelStyle: TextStyle(
+          fontSize: 13,
+          color: colors.onSurface.withOpacity(0.7),
         ),
-        const SizedBox(height: 6),
-        DropdownButtonHideUnderline(
-          child: DropdownButton2<T>(
-            isExpanded: true,
-            value: value,
-            hint: Text(
-              hint ?? 'Selecciona una opción',
-              style: t.bodyMedium?.copyWith(color: Colors.grey.shade500),
-            ),
-            items: items,
-            onChanged: onChanged,
-            buttonStyleData: ButtonStyleData(
-              height: 48,
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: colors.outline.withOpacity(0.5), // 👈 gris clarito
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            dropdownStyleData: DropdownStyleData(
-              maxHeight: 280,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: colors.outline.withOpacity(0.5), // 👈 mismo gris clarito
-                ),
-              ),
-            ),
-            menuItemStyleData: const MenuItemStyleData(
-              height: 44,
-              padding: EdgeInsets.symmetric(horizontal: 14),
-            ),
-          ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
         ),
-      ],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
     );
   }
 }

@@ -127,13 +127,13 @@ class JobDetailDialog extends StatelessWidget {
     );
   }
 
-  /// 🔹 Botón estilo peligro
+  /// 🔹 Botón estilo peligro (fill rojo sólido)
   Widget _dangerAction(String label, IconData icon, VoidCallback onTap) {
-    return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red.withOpacity(0.1),
-        foregroundColor: Colors.red,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    return FilledButton.icon(
+      style: FilledButton.styleFrom(
+        backgroundColor: Colors.red,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       onPressed: onTap,

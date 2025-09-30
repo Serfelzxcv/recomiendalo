@@ -18,54 +18,36 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
     final colors = Theme.of(context).colorScheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: t.labelMedium?.copyWith(fontWeight: FontWeight.w500),
+    return TextFormField(
+      controller: controller,
+      maxLines: maxLines,
+      keyboardType: keyboardType,
+      style: const TextStyle(fontSize: 14), // 👈 texto más compacto
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        labelStyle: TextStyle(
+          fontSize: 13,
+          color: colors.onSurface.withOpacity(0.7),
         ),
-        const SizedBox(height: 6),
-        TextField(
-          controller: controller,
-          maxLines: maxLines,
-          keyboardType: keyboardType,
-          style: const TextStyle(
-            color: Colors.black, // 👈 texto ingresado en negro
-          ),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: TextStyle(
-              color: Colors.grey.shade500, // 👈 hint gris clarito
-            ),
-            isDense: true, // 🔹 altura intermedia
-            filled: true,
-            fillColor: Colors.white, // 🔹 fondo blanco
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 12,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: colors.outline),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: colors.outline.withOpacity(0.5)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: colors.primary,
-                width: 1.5,
-              ),
-            ),
-          ),
+        hintStyle: TextStyle(
+          fontSize: 13,
+          color: Colors.grey[400],
         ),
-      ],
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10, // 👈 reduce altura
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
     );
   }
 }
