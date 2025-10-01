@@ -22,7 +22,6 @@ class AppDrawer extends StatelessWidget {
       child: SafeArea(
         child: Column(
           children: [
-            // 🔹 Header minimalista con acento turquesa
             Container(
               padding: const EdgeInsets.all(16),
               color: colors.surface,
@@ -30,7 +29,7 @@ class AppDrawer extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundColor: colors.primary.withOpacity(0.15), // 👈 toque turquesa
+                    backgroundColor: colors.primary.withOpacity(0.15),
                     child: const Icon(Icons.person, size: 32, color: Colors.black),
                   ),
                   const SizedBox(width: 12),
@@ -48,8 +47,6 @@ class AppDrawer extends StatelessWidget {
                               color: Colors.grey[600],
                             )),
                         const SizedBox(height: 8),
-
-                        // 🔹 Estado con borde turquesa sutil
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 4),

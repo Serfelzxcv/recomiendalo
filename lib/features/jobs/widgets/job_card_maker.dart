@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:recomiendalo/features/jobs/models/job_model.dart';
-import 'package:recomiendalo/features/jobs/widgets/job_detail_dialog.dart';
 
 class JobCardMaker extends StatelessWidget {
   final JobModel job;
@@ -14,85 +13,97 @@ class JobCardMaker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
     final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    // 👇 Mostrar presupuesto o "A convenir"
+    String budgetText;
+    if (job.budget != null && job.budget! > 0) {
+      budgetText = "S/ ${job.budget!.toStringAsFixed(1)}";
+    } else {
+      budgetText = "A convenir";
+    }
+
+    // 👇 Mostrar ubicación o remoto
+    final locationText = job.isRemote ? "Remoto" : job.location;
 
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (_) => JobDetailDialog(
-              job: job,
-              messageCount: messageCount,
-            ),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 🔹 Título + Badge mensajes
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      job.title,
-                      style: t.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  if (messageCount > 0)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: colors.error,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        "$messageCount",
-                        style: t.labelSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 8),
-
-              Text(
-                job.description,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: t.bodyMedium?.copyWith(color: Colors.grey[700]),
-              ),
-              const SizedBox(height: 12),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    job.budget != null ? "S/ ${job.budget}" : "A convenir",
-                    style: t.bodyMedium?.copyWith(
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: Theme.of(context).brightness == Brightness.light
+              ? Colors.grey.shade300
+              : Colors.grey.shade700,
+          width: 1,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12), // 👈 menos padding
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// --- Título y badge
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    job.title,
+                    style: textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: colors.primary,
                     ),
                   ),
-                  Text(
-                    job.location ?? "Sin ubicación",
-                    style: t.bodySmall?.copyWith(color: Colors.grey[600]),
+                ),
+                if (messageCount > 0)
+                  CircleAvatar(
+                    radius: 11,
+                    backgroundColor: Colors.red,
+                    child: Text(
+                      messageCount.toString(),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                ],
+              ],
+            ),
+
+            const SizedBox(height: 4), // 👈 menos espacio
+
+            /// --- Descripción
+            Text(
+              job.description,
+              style: textTheme.bodySmall?.copyWith(
+                color: Colors.grey[700],
               ),
-            ],
-          ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+
+            const SizedBox(height: 8), // 👈 menos espacio
+
+            /// --- Presupuesto y ubicación
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  budgetText,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  locationText,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
