@@ -22,7 +22,7 @@ class AppDrawer extends StatelessWidget {
       child: SafeArea(
         child: Column(
           children: [
-            // 🔹 Encabezado de usuario
+            // 🔹 Header
             Container(
               padding: const EdgeInsets.all(16),
               color: colors.surface,
@@ -109,7 +109,7 @@ class AppDrawer extends StatelessWidget {
                     _buildTile(
                       context,
                       icon: Icons.build_outlined,
-                      title: 'Mis servicios',
+                      title: 'Mi Perfil',
                       route: '/profile',
                     ),
                     _buildTile(
@@ -145,12 +145,6 @@ class AppDrawer extends StatelessWidget {
                   ),
                   _buildTile(
                     context,
-                    icon: Icons.person_outline,
-                    title: "Perfil",
-                    route: '/profile',
-                  ),
-                  _buildTile(
-                    context,
                     icon: Icons.settings_outlined,
                     title: "Configuración",
                     route: '/settings',
@@ -165,7 +159,7 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
 
-            // 🔹 Botón de cambio de modo
+            // 🔹 Botón cambio de modo
             SafeArea(
               minimum: const EdgeInsets.all(16),
               child: SizedBox(

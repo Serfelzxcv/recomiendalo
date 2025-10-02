@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recomiendalo/shared/widgets/app_scaffold.dart';
 import 'package:recomiendalo/shared/widgets/app_drawer.dart';
+import 'package:recomiendalo/features/connect/widgets/connect_button.dart';
 
 class ConnectScreen extends StatefulWidget {
   const ConnectScreen({super.key});
@@ -11,32 +12,41 @@ class ConnectScreen extends StatefulWidget {
 
 class _ConnectScreenState extends State<ConnectScreen> {
   String query = "";
+  String situation = "";
+  bool showResults = false;
 
-  final List<Map<String, dynamic>> categories = [
-    {"title": "Gasfiteros", "icon": Icons.water_damage_outlined},
-    {"title": "Electricistas", "icon": Icons.bolt_outlined},
-    {"title": "Carpinteros", "icon": Icons.chair_outlined},
-    {"title": "Albañiles", "icon": Icons.construction_outlined},
-    {"title": "Pintores", "icon": Icons.format_paint_outlined},
-    {"title": "Cerrajeros", "icon": Icons.lock_outline},
-    {"title": "Mecánicos", "icon": Icons.build_circle_outlined},
-    {"title": "Jardineros", "icon": Icons.grass_outlined},
+  // 🔹 Resultados hardcodeados para búsqueda directa
+  final List<Map<String, String>> searchResults = [
+    {"name": "Carlos Ramírez", "skill": "Electricista domiciliario"},
+    {"name": "Luis Torres", "skill": "Mantenimiento eléctrico"},
+    {"name": "Pedro Gutiérrez", "skill": "Instalación de cableado"},
   ];
 
-  final List<Map<String, dynamic>> trendingCategories = [
-    {"title": "Gasfiteros", "icon": Icons.water_damage_outlined},
-    {"title": "Electricistas", "icon": Icons.bolt_outlined},
-    {"title": "Albañiles", "icon": Icons.construction_outlined},
+  // 🔹 Resultados hardcodeados para IA
+  final List<Map<String, String>> aiResults = [
+    {"name": "Chef María López", "skill": "Bocaditos, catering"},
+    {"name": "Chef Juan Pérez", "skill": "Pastelería y bocaditos"},
+    {"name": "Cocinera Ana Torres", "skill": "Comida casera y rápida"},
   ];
+
+  List<Map<String, String>> currentResults = [];
+
+  void _searchFromCategory() {
+    setState(() {
+      currentResults = searchResults;
+      showResults = true;
+    });
+  }
+
+  void _searchFromAI() {
+    setState(() {
+      currentResults = aiResults;
+      showResults = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // 🔹 Filtramos categorías por el query del buscador
-    final filteredCategories = categories
-        .where((c) =>
-            c["title"].toString().toLowerCase().contains(query.toLowerCase()))
-        .toList();
-
     return AppScaffold(
       drawer: AppDrawer(
         mode: UserMode.employer,
@@ -50,111 +60,101 @@ class _ConnectScreenState extends State<ConnectScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 🔹 Search Box
+            // 🔹 Búsqueda directa por categoría
+            Text("Busca un profesional",
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Ejem: "Electricista"',
+                      prefixIcon: const Icon(Icons.search, color: Colors.teal),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onChanged: (value) => query = value,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 140, // ancho fijo para que no se expanda infinito
+                  child: ConnectButton(
+                    text: "Buscar",
+                    onPressed: _searchFromCategory,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 28),
+
+            // 🔹 Sección AI
+            Row(
+              children: [
+                const Icon(Icons.smart_toy_outlined,
+                    color: Colors.teal, size: 32),
+                const SizedBox(width: 8),
+                Text("Describe tu necesidad",
+                    style: Theme.of(context).textTheme.titleMedium),
+              ],
+            ),
+            const SizedBox(height: 12),
+
             TextField(
+              maxLines: 4,
               decoration: InputDecoration(
-                hintText: "Buscar categoría...",
-                prefixIcon: const Icon(Icons.search),
+                hintText:
+                    "Ejemplo: Tengo una reunión mañana y necesito cocineras o chefs...",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              onChanged: (value) {
-                setState(() => query = value);
-              },
-            ),
-            const SizedBox(height: 20),
-
-            // 🔹 Categorías más concurridas
-            Text(
-              "Categorías más concurridas",
-              style: Theme.of(context).textTheme.titleMedium,
+              onChanged: (val) => situation = val,
             ),
             const SizedBox(height: 12),
-            SizedBox(
-              height: 100,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: trendingCategories.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
-                itemBuilder: (context, index) {
-                  final item = trendingCategories[index];
-                  return GestureDetector(
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Abrir lista de ${item['title']}")),
-                      );
-                    },
-                    child: Container(
-                      width: 120,
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.white,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(item["icon"], size: 32, color: Colors.teal),
-                          const SizedBox(height: 8),
-                          Text(
-                            item["title"],
-                            style: Theme.of(context).textTheme.bodySmall,
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+
+            ConnectButton(
+              text: "Buscar profesionales",
+              onPressed: _searchFromAI,
             ),
 
-            const SizedBox(height: 20),
-
-            // 🔹 Todas las categorías (grid filtrado por búsqueda)
-            Text(
-              "Todas las categorías",
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 12),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-              ),
-              itemCount: filteredCategories.length,
-              itemBuilder: (context, index) {
-                final item = filteredCategories[index];
-                return GestureDetector(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Abrir lista de ${item['title']}")),
-                    );
-                  },
-                  child: Card(
+            // 🔹 Resultados sugeridos
+            if (showResults) ...[
+              const SizedBox(height: 24),
+              Text("Resultados sugeridos:",
+                  style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 12),
+              Column(
+                children: currentResults.map((pro) {
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    elevation: 2,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(item["icon"], size: 48, color: Colors.teal),
-                        const SizedBox(height: 12),
-                        Text(item["title"],
-                            style: Theme.of(context).textTheme.bodyMedium),
-                      ],
+                    child: ListTile(
+                      leading: const CircleAvatar(
+                        backgroundColor: Colors.teal,
+                        child: Icon(Icons.person, color: Colors.white),
+                      ),
+                      title: Text(pro["name"]!),
+                      subtitle: Text(pro["skill"]!),
+                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                Text("Abrir perfil de ${pro['name']}..."),
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                }).toList(),
+              ),
+            ],
           ],
         ),
       ),

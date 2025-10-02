@@ -35,10 +35,12 @@ final GoRouter appRouter = GoRouter(
       path: '/reviews/employer',
       builder: (context, state) => const ReferenceListScreen(),
     ),
+    // Perfil de colaboradores (makers no lo usan)
     GoRoute(
       path: '/profile',
       builder: (context, state) => const ProfileListScreen(),
     ),
+    // Conexión rápida solo para empleadores
     GoRoute(
       path: '/connect',
       builder: (context, state) => const ConnectScreen(),
