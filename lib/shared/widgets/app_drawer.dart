@@ -49,8 +49,7 @@ class AppDrawer extends StatelessWidget {
                             )),
                         const SizedBox(height: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             border: Border.all(color: colors.primary),
                             borderRadius: BorderRadius.circular(8),
@@ -129,26 +128,35 @@ class AppDrawer extends StatelessWidget {
 
                   const Divider(),
 
-                  _buildTile(
-                    context,
-                    icon: Icons.chat_bubble_outline,
-                    title: 'Chat',
-                    route: '/chat',
-                    badgeCount: 3,
+                  // 🔹 Chat deshabilitado (Próximamente)
+                  ListTile(
+                    leading: const Icon(Icons.chat_bubble_outline, color: Colors.grey),
+                    title: Text(
+                      "Chat (Próximamente)",
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                    enabled: false,
                   ),
-                  _buildTile(
-                    context,
-                    icon: Icons.notifications_none,
-                    title: "Notificaciones",
-                    route: '/notifications',
-                    badgeCount: 5,
+
+                  // 🔹 Notificaciones -> ocultadas en MVP
+                  // (Ya están integradas como badges en otras secciones)
+
+                  // 🔹 Configuración deshabilitada (Próximamente)
+                  ListTile(
+                    leading: const Icon(Icons.settings_outlined, color: Colors.grey),
+                    title: Text(
+                      "Configuración (Próximamente)",
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                    enabled: false,
                   ),
-                  _buildTile(
-                    context,
-                    icon: Icons.settings_outlined,
-                    title: "Configuración",
-                    route: '/settings',
-                  ),
+
                   _buildTile(
                     context,
                     icon: Icons.logout,

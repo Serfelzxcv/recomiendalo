@@ -29,10 +29,10 @@ class AppTheme {
     );
 
     return base.copyWith(
-      /// AppBar blanco con texto negro (minimalista)
+      /// 🔹 AppBar celeste con texto blanco
       appBarTheme: const AppBarTheme(
-        backgroundColor: white,
-        foregroundColor: black,
+        backgroundColor: primaryColor,
+        foregroundColor: white,
         elevation: 0,
         centerTitle: true,
       ),
@@ -59,7 +59,8 @@ class AppTheme {
         filled: true,
         fillColor: white,
         hintStyle: TextStyle(color: Colors.grey[500]),
-        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey[300]!),

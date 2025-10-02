@@ -4,7 +4,6 @@ import 'package:recomiendalo/features/profiles/sections/profile_gallery_section.
 import 'package:recomiendalo/features/profiles/sections/profile_info_section.dart';
 import 'package:recomiendalo/features/profiles/sections/profile_references_section.dart';
 
-
 class ProfileDetailScreen extends StatefulWidget {
   final ProfileModel profile;
 
@@ -35,7 +34,9 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen>
     final profile = widget.profile;
 
     return Scaffold(
-      appBar: AppBar(title: Text(profile.name)),
+      appBar: AppBar(
+        title: const Text("Perfil del trabajador"), // 🔹 Título más genérico
+      ),
       body: Column(
         children: [
           // 🔹 Header con avatar, nombre y rating
