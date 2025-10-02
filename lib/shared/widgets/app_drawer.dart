@@ -22,6 +22,7 @@ class AppDrawer extends StatelessWidget {
       child: SafeArea(
         child: Column(
           children: [
+            // 🔹 Encabezado de usuario
             Container(
               padding: const EdgeInsets.all(16),
               color: colors.surface,
@@ -98,6 +99,12 @@ class AppDrawer extends StatelessWidget {
                       title: 'Reseñas como empleador',
                       route: '/reviews/employer',
                     ),
+                    _buildTile(
+                      context,
+                      icon: Icons.handshake_outlined,
+                      title: 'Conectar con trabajadores',
+                      route: '/connect',
+                    ),
                   ] else ...[
                     _buildTile(
                       context,
@@ -117,12 +124,6 @@ class AppDrawer extends StatelessWidget {
                       icon: Icons.work_history_outlined,
                       title: 'Trabajos en curso',
                       route: '/home',
-                    ),
-                    _buildTile(
-                      context,
-                      icon: Icons.reviews_outlined,
-                      title: 'Reseñas como Colaborador',
-                      route: '/reviews/colaborator',
                     ),
                   ],
 
@@ -164,7 +165,7 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
 
-            // 🔹 Botón fijo abajo (negro sólido)
+            // 🔹 Botón de cambio de modo
             SafeArea(
               minimum: const EdgeInsets.all(16),
               child: SizedBox(
@@ -194,7 +195,6 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  /// Construye un ListTile con badge opcional
   Widget _buildTile(
     BuildContext context, {
     required IconData icon,
