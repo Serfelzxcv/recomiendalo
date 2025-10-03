@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:recomiendalo/shared/providers/user_mode_provider.dart';
 
-enum UserMode { employer, colaborator }
-
-class AppDrawer extends StatelessWidget {
-  final UserMode mode;
-  final VoidCallback onToggleMode;
-
-  const AppDrawer({
-    super.key,
-    required this.mode,
-    required this.onToggleMode,
-  });
+class AppDrawer extends ConsumerWidget {
+  const AppDrawer({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final modeState = ref.watch(userModeProvider);
+
+    final mode = modeState.value ?? UserMode.employer;
 
     return Drawer(
       child: SafeArea(
@@ -141,9 +137,6 @@ class AppDrawer extends StatelessWidget {
                     enabled: false,
                   ),
 
-                  // 🔹 Notificaciones -> ocultadas en MVP
-                  // (Ya están integradas como badges en otras secciones)
-
                   // 🔹 Configuración deshabilitada (Próximamente)
                   ListTile(
                     leading: const Icon(Icons.settings_outlined, color: Colors.grey),
@@ -181,7 +174,10 @@ class AppDrawer extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: onToggleMode,
+                  onPressed: () async {
+                    await ref.read(userModeProvider.notifier).toggleMode();
+                    Navigator.pop(context); // 👈 cerrar drawer al cambiar modo
+                  },
                   child: Text(
                     mode == UserMode.employer
                         ? "Cambiar a modo Colaborador"

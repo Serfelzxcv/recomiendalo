@@ -46,10 +46,7 @@ class ReferenceListScreen extends StatelessWidget {
     ];
 
     return AppScaffold(
-      drawer: AppDrawer(
-        mode: UserMode.employer, // 👈 puedes cambiarlo dinámico después
-        onToggleMode: () => Navigator.of(context).pop(),
-      ),
+      drawer: const AppDrawer(), // 👈 ya no recibe mode ni onToggleMode
       appBar: AppBar(
         title: const Text('Tus Referencias'),
         centerTitle: true,
@@ -66,4 +63,3 @@ class ReferenceListScreen extends StatelessWidget {
     );
   }
 }
-

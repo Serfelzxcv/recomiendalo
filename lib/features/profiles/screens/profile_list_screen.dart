@@ -40,10 +40,7 @@ class ProfileListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      drawer: AppDrawer(
-        mode: UserMode.colaborator, // 👈 luego lo hacemos dinámico
-        onToggleMode: () => Navigator.of(context).pop(),
-      ),
+      drawer: const AppDrawer(), // 👈 ahora el drawer es global con Riverpod
       appBar: AppBar(title: const Text("Mis Perfiles")),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),

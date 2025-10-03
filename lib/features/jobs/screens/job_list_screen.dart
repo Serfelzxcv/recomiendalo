@@ -25,10 +25,7 @@ class _JobListScreenState extends State<JobListScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      drawer: AppDrawer(
-        mode: UserMode.employer,
-        onToggleMode: () => Navigator.of(context).pop(),
-      ),
+      drawer: const AppDrawer(), // 👈 ahora es global con Riverpod
       appBar: AppBar(
         title: const Text("Trabajos publicados"),
       ),
@@ -52,7 +49,7 @@ class _JobListScreenState extends State<JobListScreen> {
               final job = jobs[i];
               return JobCardMaker(
                 job: job,
-                messageCount: i == 0 ? 6 : 0, // 👈 el primero con mensajes
+                messageCount: i == 0 ? 6 : 0, // 👈 solo ejemplo: primer job con mensajes
               );
             },
           );

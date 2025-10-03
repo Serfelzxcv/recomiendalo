@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:recomiendalo/shared/widgets/app_scaffold.dart';
@@ -10,15 +11,16 @@ import 'package:recomiendalo/shared/widgets/inputs/app_checkbox.dart';
 import 'package:recomiendalo/shared/widgets/inputs/app_image_picker.dart';
 import 'package:recomiendalo/shared/widgets/app_drawer.dart';
 import 'package:recomiendalo/shared/widgets/inputs/app_tags_input.dart';
+import 'package:recomiendalo/shared/providers/user_mode_provider.dart';
 
-class JobCreateScreen extends StatefulWidget {
+class JobCreateScreen extends ConsumerStatefulWidget {
   const JobCreateScreen({super.key});
 
   @override
-  State<JobCreateScreen> createState() => _JobCreateScreenState();
+  ConsumerState<JobCreateScreen> createState() => _JobCreateScreenState();
 }
 
-class _JobCreateScreenState extends State<JobCreateScreen> {
+class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
   int _step = 0;
 
   final _titleController = TextEditingController();
@@ -43,19 +45,29 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
-    final colors = Theme.of(context).colorScheme;
 
+    /// Escuchar el modo global desde Riverpod
+    final modeState = ref.watch(userModeProvider);
+    final mode = modeState.value ?? UserMode.employer;
+
+    // ⚠️ Bloquear si es colaborador
+    if (mode == UserMode.colaborator) {
+      return AppScaffold(
+        drawer: const AppDrawer(),
+        appBar: AppBar(title: const Text("Publicar trabajo")),
+        body: const Center(
+          child: Text(
+            "⚠️ Solo los empleadores pueden publicar trabajos",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
+    }
+
+    // ✅ Flujo normal para empleadores
     return AppScaffold(
-      drawer: AppDrawer(
-        mode: UserMode.employer,
-        onToggleMode: () {
-          Navigator.of(context).pop();
-          context.go('/home');
-        },
-      ),
-      appBar: AppBar(
-        title: const Text('Publicar trabajo'),
-      ),
+      drawer: const AppDrawer(),
+      appBar: AppBar(title: const Text('Publicar trabajo')),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
@@ -124,7 +136,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
 
   Widget _buildStepContent(int step, TextTheme t) {
     switch (step) {
-      case 0: // PASO 1
+      case 0:
         return SingleChildScrollView(
           key: const ValueKey('step1'),
           padding: const EdgeInsets.only(bottom: 24),
@@ -172,7 +184,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
           ),
         );
 
-      case 1: // PASO 2
+      case 1:
         return SingleChildScrollView(
           key: const ValueKey('step2'),
           padding: const EdgeInsets.only(bottom: 24),
@@ -237,7 +249,7 @@ class _JobCreateScreenState extends State<JobCreateScreen> {
           ),
         );
 
-      default: // PASO 3
+      default:
         return SingleChildScrollView(
           key: const ValueKey('step3'),
           padding: const EdgeInsets.only(bottom: 24),

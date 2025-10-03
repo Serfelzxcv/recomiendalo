@@ -48,10 +48,7 @@ class _ConnectScreenState extends State<ConnectScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      drawer: AppDrawer(
-        mode: UserMode.employer,
-        onToggleMode: () => Navigator.of(context).pop(),
-      ),
+      drawer: const AppDrawer(), // 👈 ya no recibe mode ni onToggleMode
       appBar: AppBar(
         title: const Text("Conectar con trabajadores"),
       ),
@@ -80,7 +77,7 @@ class _ConnectScreenState extends State<ConnectScreen> {
                 ),
                 const SizedBox(width: 8),
                 SizedBox(
-                  width: 140, // ancho fijo para que no se expanda infinito
+                  width: 140,
                   child: ConnectButton(
                     text: "Buscar",
                     onPressed: _searchFromCategory,
