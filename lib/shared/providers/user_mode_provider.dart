@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/legacy.dart';
 enum UserMode { employer, colaborator }
 
 class UserModeNotifier extends StateNotifier<AsyncValue<UserMode>> {
+
   UserModeNotifier() : super(const AsyncValue.data(UserMode.employer));
 
   Future<void> toggleMode() async {
@@ -17,6 +18,7 @@ class UserModeNotifier extends StateNotifier<AsyncValue<UserMode>> {
           ? UserMode.colaborator
           : UserMode.employer,
     );
+    print(state.value);
   }
 }
 
