@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:recomiendalo/shared/providers/user_mode_provider.dart';
+import 'package:recomiendalo/core/router/app_routes.dart';
 
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({super.key});
@@ -18,7 +19,7 @@ class AppDrawer extends ConsumerWidget {
       child: SafeArea(
         child: Column(
           children: [
-            // 🔹 Header
+            // ðŸ”¹ Header
             Container(
               padding: const EdgeInsets.all(16),
               color: colors.surface,
@@ -27,19 +28,23 @@ class AppDrawer extends ConsumerWidget {
                   CircleAvatar(
                     radius: 28,
                     backgroundColor: colors.primary.withOpacity(0.15),
-                    child: const Icon(Icons.person, size: 32, color: Colors.black),
+                    child: Icon(
+                      Icons.person,
+                      size: 32,
+                      color: colors.onSurface,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Usuario Demo",
+                        Text('Usuario Demo',
                             style: textTheme.titleMedium?.copyWith(
-                              color: Colors.black,
+                              color: colors.onSurface,
                               fontWeight: FontWeight.bold,
                             )),
-                        Text("demo@correo.com",
+                        Text('demo@correo.com',
                             style: textTheme.bodySmall?.copyWith(
                               color: Colors.grey[600],
                             )),
@@ -52,8 +57,8 @@ class AppDrawer extends ConsumerWidget {
                           ),
                           child: Text(
                             mode == UserMode.employer
-                                ? "Modo Empleador"
-                                : "Modo Colaborador",
+                                ? 'Modo Empleador'
+                                : 'Modo Colaborador',
                             style: textTheme.labelSmall?.copyWith(
                               color: colors.primary,
                               fontWeight: FontWeight.w600,
@@ -69,7 +74,7 @@ class AppDrawer extends ConsumerWidget {
 
             const Divider(height: 1),
 
-            // 🔹 Opciones dinámicas
+            // ðŸ”¹ Opciones dinÃ¡micas
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
@@ -79,56 +84,56 @@ class AppDrawer extends ConsumerWidget {
                       context,
                       icon: Icons.add_box_outlined,
                       title: 'Publicar trabajo',
-                      route: '/jobs/create',
+                      route: AppRoutes.jobsCreate,
                     ),
                     _buildTile(
                       context,
                       icon: Icons.work_outline,
                       title: 'Trabajos publicados',
-                      route: '/jobs/list',
+                      route: AppRoutes.jobsList,
                       badgeCount: 2,
                     ),
                     _buildTile(
                       context,
                       icon: Icons.reviews_outlined,
                       title: 'Reseñas como empleador',
-                      route: '/reviews/employer',
+                      route: AppRoutes.reviewsEmployer,
                     ),
                     _buildTile(
                       context,
                       icon: Icons.handshake_outlined,
                       title: 'Conectar con trabajadores',
-                      route: '/connect',
+                      route: AppRoutes.connect,
                     ),
                   ] else ...[
                     _buildTile(
                       context,
                       icon: Icons.build_outlined,
                       title: 'Mi Perfil',
-                      route: '/profile',
+                      route: AppRoutes.profile,
                     ),
                     _buildTile(
                       context,
                       icon: Icons.local_offer_outlined,
                       title: 'Mis ofertas',
-                      route: '/home',
+                      route: AppRoutes.home,
                       badgeCount: 1,
                     ),
                     _buildTile(
                       context,
                       icon: Icons.work_history_outlined,
                       title: 'Trabajos en curso',
-                      route: '/home',
+                      route: AppRoutes.home,
                     ),
                   ],
 
                   const Divider(),
 
-                  // 🔹 Chat deshabilitado (Próximamente)
+                  // ðŸ”¹ Chat deshabilitado (PrÃ³ximamente)
                   ListTile(
                     leading: const Icon(Icons.chat_bubble_outline, color: Colors.grey),
                     title: Text(
-                      "Chat (Próximamente)",
+                      'Chat (Próximamente)',
                       style: textTheme.bodyMedium?.copyWith(
                         color: Colors.grey,
                         fontStyle: FontStyle.italic,
@@ -137,11 +142,11 @@ class AppDrawer extends ConsumerWidget {
                     enabled: false,
                   ),
 
-                  // 🔹 Configuración deshabilitada (Próximamente)
+                  // ðŸ”¹ Configuración (Próximamente)
                   ListTile(
                     leading: const Icon(Icons.settings_outlined, color: Colors.grey),
                     title: Text(
-                      "Configuración (Próximamente)",
+                      'Configuración (Próximamente)',
                       style: textTheme.bodyMedium?.copyWith(
                         color: Colors.grey,
                         fontStyle: FontStyle.italic,
@@ -153,14 +158,14 @@ class AppDrawer extends ConsumerWidget {
                   _buildTile(
                     context,
                     icon: Icons.logout,
-                    title: "Cerrar sesión",
-                    route: '/login',
+                    title: 'Cerrar sesión',
+                    route: AppRoutes.login,
                   ),
                 ],
               ),
             ),
 
-            // 🔹 Botón cambio de modo
+            // Botón cambio de modo
             SafeArea(
               minimum: const EdgeInsets.all(16),
               child: SizedBox(
@@ -168,20 +173,20 @@ class AppDrawer extends ConsumerWidget {
                 height: 48,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   onPressed: () async {
                     await ref.read(userModeProvider.notifier).toggleMode();
-                    Navigator.pop(context); // 👈 cerrar drawer al cambiar modo
+                    Navigator.pop(context); // ðŸ‘ˆ cerrar drawer al cambiar modo
                   },
                   child: Text(
                     mode == UserMode.employer
-                        ? "Cambiar a modo Colaborador"
-                        : "Cambiar a modo Empleador",
+                        ? 'Cambiar a modo Colaborador'
+                        : 'Cambiar a modo Empleador',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -202,12 +207,20 @@ class AppDrawer extends ConsumerWidget {
   }) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final currentLocation = GoRouterState.of(context).uri.toString();
+    final bool isSelected =
+        currentLocation == route || currentLocation.startsWith(route);
 
     return ListTile(
+      selected: isSelected,
+      selectedTileColor: colors.primary.withOpacity(0.08),
       leading: Stack(
         clipBehavior: Clip.none,
         children: [
-          Icon(icon, color: Colors.black87),
+          Icon(
+            icon,
+            color: isSelected ? colors.primary : colors.onSurface,
+          ),
           if (badgeCount != null && badgeCount > 0)
             Positioned(
               right: -6,
@@ -226,9 +239,29 @@ class AppDrawer extends ConsumerWidget {
             ),
         ],
       ),
-      title: Text(title,
-          style: textTheme.bodyMedium?.copyWith(color: Colors.black87)),
-      onTap: () => context.go(route),
+      title: Text(
+        title,
+        style: textTheme.bodyMedium?.copyWith(
+          color: isSelected ? colors.primary : colors.onSurface,
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+        ),
+      ),
+      onTap: () {
+        Navigator.pop(context);
+        final current = GoRouterState.of(context).uri.toString();
+        if (current != route) context.go(route);
+      },
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+

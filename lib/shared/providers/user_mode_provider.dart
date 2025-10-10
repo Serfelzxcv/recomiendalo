@@ -1,25 +1,29 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 
 /// Estados posibles
 enum UserMode { employer, colaborator }
 
-class UserModeNotifier extends StateNotifier<AsyncValue<UserMode>> {
-
-  UserModeNotifier() : super(const AsyncValue.data(UserMode.employer));
+class UserModeNotifier extends AsyncNotifier<UserMode> {
+  @override
+  FutureOr<UserMode> build() {
+    return UserMode.employer;
+  }
 
   Future<void> toggleMode() async {
-    state = const AsyncValue.loading();
+    // Conservar el valor actual antes de pasar a loading
+    final current = state.value ?? UserMode.employer;
+    state = const AsyncLoading<UserMode>();
 
     await Future.delayed(const Duration(milliseconds: 450));
 
-    state = AsyncValue.data(
-      state.value == UserMode.employer
-          ? UserMode.colaborator
-          : UserMode.employer,
-    );
-    print(state.value);
+    final next = current == UserMode.employer
+        ? UserMode.colaborator
+        : UserMode.employer;
+
+    state = AsyncData<UserMode>(next);
   }
 }
 
-final userModeProvider =  StateNotifierProvider<UserModeNotifier, AsyncValue<UserMode>>((ref) => UserModeNotifier(),);
+final userModeProvider =
+    AsyncNotifierProvider<UserModeNotifier, UserMode>(UserModeNotifier.new);

@@ -32,6 +32,13 @@ class _ConnectScreenState extends State<ConnectScreen> {
   List<Map<String, String>> currentResults = [];
 
   void _searchFromCategory() {
+    FocusScope.of(context).unfocus();
+    if (query.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Escribe una categoría para buscar')),
+      );
+      return;
+    }
     setState(() {
       currentResults = searchResults;
       showResults = true;
@@ -39,6 +46,13 @@ class _ConnectScreenState extends State<ConnectScreen> {
   }
 
   void _searchFromAI() {
+    FocusScope.of(context).unfocus();
+    if (situation.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Describe tu necesidad para recomendar')),
+      );
+      return;
+    }
     setState(() {
       currentResults = aiResults;
       showResults = true;
@@ -72,7 +86,9 @@ class _ConnectScreenState extends State<ConnectScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
+                    textInputAction: TextInputAction.search,
                     onChanged: (value) => query = value,
+                    onSubmitted: (_) => _searchFromCategory(),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -110,6 +126,8 @@ class _ConnectScreenState extends State<ConnectScreen> {
                 ),
               ),
               onChanged: (val) => situation = val,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _searchFromAI(),
             ),
             const SizedBox(height: 12),
 

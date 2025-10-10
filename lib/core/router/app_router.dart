@@ -7,42 +7,43 @@ import 'package:recomiendalo/features/jobs/screens/job_list_screen.dart';
 import 'package:recomiendalo/features/profiles/screens/profile_list_screen.dart';
 import 'package:recomiendalo/features/references/screens/reference_list_screen.dart';
 import 'package:recomiendalo/features/connect/screens/connect_screen.dart';
+import 'package:recomiendalo/core/router/app_routes.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/login',
+  initialLocation: AppRoutes.login,
   routes: [
     GoRoute(
-      path: '/login',
+      path: AppRoutes.login,
       builder: (context, state) => const LoginScreen(),
     ),
     GoRoute(
-      path: '/register',
+      path: AppRoutes.register,
       builder: (context, state) => const RegisterScreen(),
     ),
     GoRoute(
-      path: '/home',
+      path: AppRoutes.home,
       builder: (context, state) => const MainScreen(),
     ),
     GoRoute(
-      path: '/jobs/list',
+      path: AppRoutes.jobsList,
       builder: (context, state) => const JobListScreen(),
     ),
     GoRoute(
-      path: '/jobs/create',
+      path: AppRoutes.jobsCreate,
       builder: (context, state) => const JobCreateScreen(),
     ),
     GoRoute(
-      path: '/reviews/employer',
+      path: AppRoutes.reviewsEmployer,
       builder: (context, state) => const ReferenceListScreen(),
     ),
     // Perfil de colaboradores (makers no lo usan)
     GoRoute(
-      path: '/profile',
+      path: AppRoutes.profile,
       builder: (context, state) => const ProfileListScreen(),
     ),
     // Conexión rápida solo para empleadores
     GoRoute(
-      path: '/connect',
+      path: AppRoutes.connect,
       builder: (context, state) => const ConnectScreen(),
     ),
   ],
