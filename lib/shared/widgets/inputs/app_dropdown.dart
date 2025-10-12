@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 class AppDropdown<T> extends StatelessWidget {
   final String label;
@@ -20,11 +21,12 @@ class AppDropdown<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
-    return DropdownButtonFormField<T>(
+    return DropdownButtonFormField2<T>(
       value: value,
       items: items,
       onChanged: onChanged,
-      style: const TextStyle(fontSize: 14), // 👈 texto más chico
+      isExpanded: true,
+      hint: hint != null ? Text(hint!) : null,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
@@ -43,3 +45,4 @@ class AppDropdown<T> extends StatelessWidget {
     );
   }
 }
+
