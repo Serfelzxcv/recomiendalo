@@ -180,9 +180,28 @@ class AppDrawer extends ConsumerWidget {
                     ),
                   ),
                   onPressed: () async {
+                    Navigator.pop(context); // 🔹 Cierra el Drawer primero
+
+                    // 🔹 Muestra diálogo temporal "Cambiando de modo..."
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (_) => const _SwitchingModeDialog(),
+                    );
+
+                    // 🔹 Espera 1.5 segundos (efecto de transición)
+                    await Future.delayed(const Duration(milliseconds: 1500));
+
+                    // 🔹 Cambia el modo real
                     await ref.read(userModeProvider.notifier).toggleMode();
-                    Navigator.pop(context); // ðŸ‘ˆ cerrar drawer al cambiar modo
+
+                    // 🔹 Cierra el diálogo
+                    if (context.mounted) Navigator.of(context).pop();
+
+                    // 🔹 Redirige al home del nuevo modo
+                    if (context.mounted) context.go(AppRoutes.home);
                   },
+
                   child: Text(
                     mode == UserMode.employer
                         ? 'Cambiar a modo Colaborador'
@@ -256,7 +275,37 @@ class AppDrawer extends ConsumerWidget {
 }
 
 
+class _SwitchingModeDialog extends StatelessWidget {
+  const _SwitchingModeDialog();
 
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Dialog(
+      backgroundColor: colors.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(
+              'Cambiando de modo...',
+              style: textTheme.titleMedium?.copyWith(
+                color: colors.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 
 
