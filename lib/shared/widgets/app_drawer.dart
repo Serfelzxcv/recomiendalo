@@ -106,31 +106,48 @@ class AppDrawer extends ConsumerWidget {
                       title: 'Conectar con trabajadores',
                       route: AppRoutes.connect,
                     ),
-                  ] else ...[
+                  ]else ...[
                     _buildTile(
-                      context,
-                      icon: Icons.build_outlined,
-                      title: 'Mi Perfil',
-                      route: AppRoutes.profile,
-                    ),
+                        context,
+                        icon: Icons.build_outlined,
+                        title: 'Mi Perfil',
+                        route: AppRoutes.profile,
+                      ),
                     _buildTile(
-                      context,
-                      icon: Icons.local_offer_outlined,
-                      title: 'Mis ofertas',
-                      route: AppRoutes.myOffers,
-                      badgeCount: 1,
-                    ),
-                    _buildTile(
-                      context,
-                      icon: Icons.work_history_outlined,
-                      title: 'Trabajos en curso',
-                      route: AppRoutes.worksInProgress,
-                    ),
-                  ],
+                        context,
+                        icon: Icons.local_offer_outlined,
+                        title: 'Mis ofertas',
+                        route: AppRoutes.myOffers,
+                        badgeCount: 1,
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.work_history_outlined, color: Colors.grey),
+                        title: Text(
+                          'Trabajos en curso (Próximamente)',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                        enabled: false,
+                      ),
+                    ],
 
+
+
+                  // ListTile(
+                  //   leading: const Icon(Icons.chat_bubble_outline, color: Colors.grey),
+                  //   title: Text(
+                  //     'Chat (Próximamente)',
+                  //     style: textTheme.bodyMedium?.copyWith(
+                  //       color: Colors.grey,
+                  //       fontStyle: FontStyle.italic,
+                  //     ),
+                  //   ),
+                  //   enabled: false,
+                  // ),
                   const Divider(),
 
-                  // ðŸ”¹ Chat deshabilitado (PrÃ³ximamente)
                   ListTile(
                     leading: const Icon(Icons.chat_bubble_outline, color: Colors.grey),
                     title: Text(
@@ -143,7 +160,6 @@ class AppDrawer extends ConsumerWidget {
                     enabled: false,
                   ),
 
-                  // ðŸ”¹ Configuración (Próximamente)
                   ListTile(
                     leading: const Icon(Icons.settings_outlined, color: Colors.grey),
                     title: Text(
