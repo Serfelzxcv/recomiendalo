@@ -117,14 +117,14 @@ class AppDrawer extends ConsumerWidget {
                       context,
                       icon: Icons.local_offer_outlined,
                       title: 'Mis ofertas',
-                      route: AppRoutes.home,
+                      route: AppRoutes.myOffers,
                       badgeCount: 1,
                     ),
                     _buildTile(
                       context,
                       icon: Icons.work_history_outlined,
                       title: 'Trabajos en curso',
-                      route: AppRoutes.home,
+                      route: AppRoutes.worksInProgress,
                     ),
                   ],
 
