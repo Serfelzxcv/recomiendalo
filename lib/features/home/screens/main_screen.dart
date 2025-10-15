@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recomiendalo/shared/models/user_mode.dart';
 import 'package:recomiendalo/shared/widgets/app_drawer.dart';
 import 'package:recomiendalo/shared/widgets/app_scaffold.dart';
 import 'package:recomiendalo/shared/widgets/loading_overlay.dart';

@@ -36,7 +36,7 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.reviewsEmployer,
       builder: (context, state) => const ReferenceListScreen(),
     ),
-    // Perfil de colaboradores (makers no lo usan)
+    // ---------------------------------------------------------------------------------------Perfil de colaboradores (makers no lo usan)
     GoRoute(
       path: AppRoutes.profile,
       builder: (context, state) => const ProfileListScreen(),

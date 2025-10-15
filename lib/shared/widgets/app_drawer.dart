@@ -1,8 +1,10 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:recomiendalo/shared/models/user_mode.dart';
 import 'package:recomiendalo/shared/providers/user_mode_provider.dart';
 import 'package:recomiendalo/core/router/app_routes.dart';
+import 'package:recomiendalo/shared/widgets/dialogs/switching_mode_dialog.dart';
 
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({super.key});
@@ -19,7 +21,6 @@ class AppDrawer extends ConsumerWidget {
       child: SafeArea(
         child: Column(
           children: [
-            // ðŸ”¹ Header
             Container(
               padding: const EdgeInsets.all(16),
               color: colors.surface,
@@ -180,28 +181,28 @@ class AppDrawer extends ConsumerWidget {
                     ),
                   ),
                   onPressed: () async {
-                    Navigator.pop(context); // 🔹 Cierra el Drawer primero
 
-                    // 🔹 Muestra diálogo temporal "Cambiando de modo..."
-                    showDialog(
+                    showGeneralDialog(
                       context: context,
                       barrierDismissible: false,
-                      builder: (_) => const _SwitchingModeDialog(),
+                      barrierColor: Colors.black.withOpacity(0.4),
+                      transitionDuration: const Duration(milliseconds: 200),
+                      pageBuilder: (_, __, ___) {
+                        return const Center(
+                          child: SwitchingModeDialog(),
+                        );
+                      },
                     );
 
-                    // 🔹 Espera 1.5 segundos (efecto de transición)
-                    await Future.delayed(const Duration(milliseconds: 1500));
-
-                    // 🔹 Cambia el modo real
                     await ref.read(userModeProvider.notifier).toggleMode();
 
-                    // 🔹 Cierra el diálogo
-                    if (context.mounted) Navigator.of(context).pop();
+                    await Future.delayed(const Duration(milliseconds: 300));
 
-                    // 🔹 Redirige al home del nuevo modo
+                    if (context.mounted) {
+                      Navigator.of(context, rootNavigator: true).pop();
+                    }
                     if (context.mounted) context.go(AppRoutes.home);
                   },
-
                   child: Text(
                     mode == UserMode.employer
                         ? 'Cambiar a modo Colaborador'
@@ -274,38 +275,6 @@ class AppDrawer extends ConsumerWidget {
   }
 }
 
-
-class _SwitchingModeDialog extends StatelessWidget {
-  const _SwitchingModeDialog();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Dialog(
-      backgroundColor: colors.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            Text(
-              'Cambiando de modo...',
-              style: textTheme.titleMedium?.copyWith(
-                color: colors.onSurface,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 
 
