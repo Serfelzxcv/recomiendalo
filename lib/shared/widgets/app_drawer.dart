@@ -133,19 +133,6 @@ class AppDrawer extends ConsumerWidget {
                       ),
                     ],
 
-
-
-                  // ListTile(
-                  //   leading: const Icon(Icons.chat_bubble_outline, color: Colors.grey),
-                  //   title: Text(
-                  //     'Chat (Próximamente)',
-                  //     style: textTheme.bodyMedium?.copyWith(
-                  //       color: Colors.grey,
-                  //       fontStyle: FontStyle.italic,
-                  //     ),
-                  //   ),
-                  //   enabled: false,
-                  // ),
                   const Divider(),
 
                   ListTile(
@@ -197,28 +184,28 @@ class AppDrawer extends ConsumerWidget {
                     ),
                   ),
                   onPressed: () async {
-
                     showGeneralDialog(
                       context: context,
                       barrierDismissible: false,
                       barrierColor: Colors.black.withOpacity(0.4),
                       transitionDuration: const Duration(milliseconds: 200),
                       pageBuilder: (_, __, ___) {
-                        return const Center(
-                          child: SwitchingModeDialog(),
-                        );
+                        return const Center(child: SwitchingModeDialog());
                       },
                     );
-
                     await ref.read(userModeProvider.notifier).toggleMode();
 
-                    await Future.delayed(const Duration(milliseconds: 300));
+                    await Future.delayed(const Duration(milliseconds: 400));
 
                     if (context.mounted) {
                       Navigator.of(context, rootNavigator: true).pop();
+
+                      Navigator.of(context).pop();
+
+                      context.go(AppRoutes.home);
                     }
-                    if (context.mounted) context.go(AppRoutes.home);
                   },
+
                   child: Text(
                     mode == UserMode.employer
                         ? 'Cambiar a modo Colaborador'
