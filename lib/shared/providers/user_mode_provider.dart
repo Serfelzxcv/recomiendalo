@@ -2,8 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recomiendalo/shared/models/user_mode.dart';
 
-final userModeProvider =
-    AsyncNotifierProvider<UserModeNotifier, UserMode>(UserModeNotifier.new);
+final userModeProvider =AsyncNotifierProvider<UserModeNotifier, UserMode>(UserModeNotifier.new);
 
 class UserModeNotifier extends AsyncNotifier<UserMode> {
   @override

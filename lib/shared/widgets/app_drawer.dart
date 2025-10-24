@@ -197,7 +197,6 @@ class AppDrawer extends ConsumerWidget {
                     ),
                   ),
                   onPressed: () async {
-
                     showGeneralDialog(
                       context: context,
                       barrierDismissible: false,
@@ -214,11 +213,20 @@ class AppDrawer extends ConsumerWidget {
 
                     await Future.delayed(const Duration(milliseconds: 300));
 
-                    if (context.mounted) {
-                      Navigator.of(context, rootNavigator: true).pop();
+                    if (!context.mounted) return;
+
+                    Navigator.of(context, rootNavigator: true).pop();
+                    if (Navigator.of(context).canPop()) {
+                      Navigator.of(context).pop();
                     }
-                    if (context.mounted) context.go(AppRoutes.home);
+
+                    await Future.delayed(const Duration(milliseconds: 100));
+                    if (context.mounted) {
+                      final refreshParam = DateTime.now().millisecondsSinceEpoch;
+                      context.go("${AppRoutes.home}?refresh=$refreshParam");
+                    }
                   },
+
                   child: Text(
                     mode == UserMode.employer
                         ? 'Cambiar a modo Colaborador'
