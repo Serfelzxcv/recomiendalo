@@ -12,13 +12,11 @@ class UserModeNotifier extends AsyncNotifier<UserMode> {
   Future<void> toggleMode() async {
     final current = state.asData?.value ?? UserMode.employer;
 
-    state = const AsyncLoading(); // no hace falta <UserMode>
-    await Future.delayed(const Duration(milliseconds: 400));
-
+    state = const AsyncLoading();
     final next = current == UserMode.employer
         ? UserMode.colaborator
         : UserMode.employer;
 
-    state = AsyncData(next); // no hace falta <UserMode>
+    state = AsyncData(next);
   }
 }
