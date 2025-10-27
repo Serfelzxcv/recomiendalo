@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Iconos de Cupertino
   cupertino_icons: ^1.0.8
 
   # Navegación
@@ -31,6 +32,9 @@ dependencies:
 
   # Drop Down
   dropdown_button2: ^2.3.9
+
+  # Dio para peticiones HTTP
+  dio: ^5.9.0
 
 dev_dependencies:
   flutter_test:
