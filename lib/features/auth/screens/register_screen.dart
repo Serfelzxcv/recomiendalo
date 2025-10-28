@@ -85,16 +85,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _onFinish() {
     final fullName =
-        "${_nameController.text.trim()} ${_lastnameController.text.trim()}";
+      '${_nameController.text.trim()} ${_lastnameController.text.trim()}';
 
     final payload = {
-      "fullName": fullName,
-      "phone": _phoneController.text.trim(),
-      "email": _emailController.text.trim(),
-      "password": _passwordController.text.trim(),
+      'fullName': fullName,
+      'phone': _phoneController.text.trim(),
+      'email': _emailController.text.trim(),
+      'password': _passwordController.text.trim(),
     };
 
-    debugPrint("📤 Enviando registro: $payload");
+    debugPrint('📤 Enviando registro: $payload');
     // TODO: POST al backend
     context.go('/home');
   }
@@ -348,11 +348,11 @@ class _LoginRedirect extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("¿Ya tienes una cuenta? "),
+        const Text('¿Ya tienes una cuenta? '),
         GestureDetector(
           onTap: onTap,
           child: Text(
-            "Entrar",
+            'Entrar',
             style: TextStyle(
               color: colors.primary,
               fontWeight: FontWeight.bold,

@@ -36,6 +36,9 @@ dependencies:
   # Dio para peticiones HTTP
   dio: ^5.9.0
 
+  # Dio para peticiones HTTP
+  flutter_dotenv: ^6.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
