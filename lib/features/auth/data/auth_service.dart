@@ -20,6 +20,7 @@ class AuthService {
   Future<Response> sendOtp(String phone) async {
     try {
       final res = await _dio.post(API.sendOtp, data: {"phone": phone});
+      print(API.sendOtp);
       return res;
     } on DioException catch (e) {
       throw Exception(e.response?.data['message'] ?? 'Error al enviar OTP');
@@ -29,6 +30,7 @@ class AuthService {
   // ✅ Verificar OTP
   Future<Response> verifyOtp(String phone, String code) async {
     try {
+      print(API.verifyOtp);
       final res = await _dio.post(API.verifyOtp, data: {
         "phone": phone,
         "code": code,

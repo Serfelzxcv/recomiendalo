@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:recomiendalo/features/auth/data/auth_repository.dart';
 import 'package:recomiendalo/features/auth/models/register_model.dart';
 import 'package:recomiendalo/shared/widgets/app_scaffold.dart';
@@ -17,7 +18,6 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   int _step = 0;
 
-  // Controladores
   final _nameController = TextEditingController();
   final _lastnameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -26,7 +26,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   final _otpController = TextEditingController();
 
-  // 🔹 Keys separadas para cada formulario
   final _formKeyStep1 = GlobalKey<FormState>();
   final _formKeyStep2 = GlobalKey<FormState>();
   final _formKeyStep3 = GlobalKey<FormState>();
@@ -35,7 +34,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _loading = false;
 
   void _nextStep() {
-    // Verifica qué formulario debe validar
     final formKey = _step == 0
         ? _formKeyStep1
         : _step == 1
@@ -53,13 +51,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _onFinish() async {
     if (_loading) return;
-
     setState(() => _loading = true);
 
     try {
-      // Paso 2 → Enviar OTP
+      debugPrint('🟢 Entrando a _onFinish() en step $_step');
+
+      // Paso 1 → Enviar OTP
       if (_step == 1) {
         final phone = _phoneController.text.trim();
+
+        if (phone.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Ingrese un número válido')),
+          );
+          return;
+        }
+
         final sent = await _repo.sendOtp(phone);
 
         if (sent) {
@@ -67,10 +74,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const SnackBar(content: Text('OTP enviado correctamente')),
           );
           setState(() => _step = 2);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('❌ No se pudo enviar el OTP')),
+          );
         }
       }
 
-      // Paso 3 → Verificar OTP y registrar usuario
+      // Paso 2 → Verificar OTP y registrar usuario
       else if (_step == 2) {
         final phone = _phoneController.text.trim();
         final code = _otpController.text.trim();
@@ -80,7 +91,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (verified) {
           final fullName =
               '${_nameController.text.trim()} ${_lastnameController.text.trim()}';
-
           final model = RegisterModel(
             fullName: fullName,
             email: _emailController.text.trim(),
@@ -136,7 +146,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 24),
                 Expanded(
                   child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 350),
+                    duration: const Duration(milliseconds: 400),
                     switchInCurve: Curves.easeInOut,
                     switchOutCurve: Curves.easeInOut,
                     child: _buildStepContent(colors, t),
@@ -162,24 +172,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _buildStepContent(ColorScheme colors, TextTheme t) {
     switch (_step) {
-      // Paso 1: Datos personales
       case 0:
         return Form(
           key: _formKeyStep1,
           child: ListView(
             key: const ValueKey('step1'),
             children: [
-              Text(
-                'Datos personales',
-                style: t.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Cuéntanos quién eres para crear tu cuenta',
-                style: t.bodyMedium?.copyWith(color: Colors.grey[600]),
-                textAlign: TextAlign.center,
-              ),
+              Text('Datos personales',
+                  style: t.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center),
               const SizedBox(height: 32),
               AppTextField(
                 label: 'Nombres',
@@ -209,24 +210,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         );
 
-      // Paso 2: Seguridad y contacto
       case 1:
         return Form(
           key: _formKeyStep2,
           child: ListView(
             key: const ValueKey('step2'),
             children: [
-              Text(
-                'Seguridad y contacto',
-                style: t.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Crea una contraseña segura y valida tu número de teléfono',
-                style: t.bodyMedium?.copyWith(color: Colors.grey[600]),
-                textAlign: TextAlign.center,
-              ),
+              Text('Seguridad y contacto',
+                  style: t.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center),
               const SizedBox(height: 32),
               AppTextField(
                 label: 'Contraseña',
@@ -249,35 +241,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              AppTextField(
-                label: 'Teléfono',
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                validator: (v) =>
-                    v == null || v.length < 9 ? 'Teléfono inválido' : null,
+              IntlPhoneField(
+                decoration: const InputDecoration(
+                  labelText: 'Teléfono',
+                  border: OutlineInputBorder(),
+                ),
+                initialCountryCode: 'PE',
+                onChanged: (phone) =>
+                    _phoneController.text = phone.completeNumber,
               ),
             ],
           ),
         );
 
-      // Paso 3: OTP
       default:
         return Form(
           key: _formKeyStep3,
           child: ListView(
             key: const ValueKey('step3'),
             children: [
-              Text(
-                'Verifica tu teléfono',
-                style: t.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Hemos enviado un código OTP a tu número\n${_phoneController.text.isEmpty ? '— — —' : _phoneController.text}',
-                style: t.bodyMedium?.copyWith(color: Colors.grey[600]),
-                textAlign: TextAlign.center,
-              ),
+              Text('Verifica tu teléfono',
+                  style: t.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center),
               const SizedBox(height: 32),
               AppTextField(
                 label: 'Código OTP',
@@ -286,22 +271,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 validator: (v) =>
                     v == null || v.isEmpty ? 'Ingrese el código' : null,
               ),
-              const SizedBox(height: 20),
-              TextButton(
-                onPressed: () async {
-                  try {
-                    await _repo.sendOtp(_phoneController.text.trim());
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('OTP reenviado')),
-                    );
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error al reenviar OTP: $e')),
-                    );
-                  }
-                },
-                child: const Text('Reenviar código'),
-              ),
             ],
           ),
         );
@@ -309,7 +278,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
-/// 🔹 Header de pasos visual
 class _StepHeader extends StatelessWidget {
   final int current;
   const _StepHeader({required this.current});
@@ -317,42 +285,33 @@ class _StepHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-
     Widget circle(bool active, String text) {
-      return Column(
-        children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: active ? colors.primary : Colors.grey[300],
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              active ? Icons.check : Icons.circle,
-              size: active ? 16 : 10,
-              color: active ? colors.onPrimary : Colors.grey[600],
-            ),
+      return Column(children: [
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          width: 28,
+          height: 28,
+          decoration: BoxDecoration(
+            color: active ? colors.primary : Colors.grey[300],
+            shape: BoxShape.circle,
           ),
-          const SizedBox(height: 4),
-          Text(
-            text,
+          child: Icon(
+            active ? Icons.check : Icons.circle,
+            size: active ? 16 : 10,
+            color: active ? colors.onPrimary : Colors.grey[600],
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(text,
             style: Theme.of(context)
                 .textTheme
                 .labelMedium
-                ?.copyWith(color: active ? colors.primary : Colors.grey[600]),
-          ),
-        ],
-      );
+                ?.copyWith(color: active ? colors.primary : Colors.grey[600])),
+      ]);
     }
 
-    Widget line(bool filled) => Expanded(
-          child: Container(
-            height: 2,
-            color: filled ? colors.primary : Colors.grey[300],
-          ),
-        );
+    Widget line(bool filled) =>
+        Expanded(child: Container(height: 2, color: filled ? colors.primary : Colors.grey[300]));
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -367,13 +326,12 @@ class _StepHeader extends StatelessWidget {
   }
 }
 
-/// 🔹 Botones inferiores
 class _BottomActions extends StatelessWidget {
   final int step;
   final bool loading;
   final VoidCallback onPrev;
   final VoidCallback onNext;
-  final VoidCallback onFinish;
+  final Future<void> Function() onFinish;
 
   const _BottomActions({
     required this.step,
@@ -385,24 +343,35 @@ class _BottomActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        if (step > 0)
-          Expanded(
-            child: SecondaryButton(
-              text: 'Atrás',
-              onPressed: loading ? () {} : onPrev,
-            ),
-          ),
-        if (step > 0) const SizedBox(width: 12),
+    final isLastStep = step == 2;
+    final isSendOtpStep = step == 1;
+
+    return Row(children: [
+      if (step > 0)
         Expanded(
-          child: PrimaryButton(
-            text: step < 2 ? 'Siguiente' : 'Finalizar',
-            onPressed: loading ? () {} : (step < 2 ? onNext : onFinish),
+          child: SecondaryButton(
+            text: 'Atrás',
+            onPressed: loading ? () {} : onPrev,
           ),
         ),
-      ],
-    );
+      if (step > 0) const SizedBox(width: 12),
+      Expanded(
+        child: PrimaryButton(
+          text: isSendOtpStep
+              ? 'Enviar código'
+              : (isLastStep ? 'Finalizar' : 'Siguiente'),
+          onPressed: loading
+              ? () {}
+              : () {
+                  if (isSendOtpStep || isLastStep) {
+                    onFinish();
+                  } else {
+                    onNext();
+                  }
+                },
+        ),
+      ),
+    ]);
   }
 }
 

@@ -39,6 +39,9 @@ dependencies:
   # Dio para peticiones HTTP
   flutter_dotenv: ^6.0.0
 
+  # selector de país con su bandera y código
+  intl_phone_field: ^3.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -46,6 +49,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  # assets:
+  assets:
+    - .env
     # - assets/images/
     # - assets/icons/
