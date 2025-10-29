@@ -14,17 +14,10 @@ class URL {
   static String ws(String uri) => "${sslActive ? 'wss' : 'ws'}://$domain$uri";
 }
 
+// lib/core/constants/api_routes.dart
 class API {
-  static String get domain => URL.domain;
-
-  // 🔹 Auth
-  static String get register => URL.http('/auth/register');
-  static String get login    => URL.http('/auth/login');
-
-  // 🔹 Usuarios (cuando los agregues)
-  static String get userProfile => URL.http('/users/profile');
-  static String get resendOtp => URL.http('/auth/resend-otp');
-
-  // 🔹 Ejemplo adicional (luego puedes ir agregando)
-  static String get home => URL.http('/home');
+  static String get register  => URL.http("/auth/register");
+  static String get sendOtp   => URL.http("/auth/send_otp");
+  static String get verifyOtp => URL.http("/auth/verify_otp");
+  static String get login     => URL.http("/auth/login");
 }
