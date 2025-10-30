@@ -16,9 +16,6 @@ dependencies:
   # Navegación
   go_router: ^16.2.1
 
-  # Theming y tipografías
-  google_fonts: ^6.3.1
-
   # Responsive
   flutter_screenutil: ^5.9.3
 
@@ -42,6 +39,9 @@ dependencies:
   # selector de país con su bandera y código
   intl_phone_field: ^3.2.0
 
+  # Fuentes de google
+  google_fonts: ^6.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -51,5 +51,5 @@ flutter:
   uses-material-design: true
   assets:
     - .env
-    # - assets/images/
+    - assets/images/workers_without_background.png
     # - assets/icons/
