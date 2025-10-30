@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:recomiendalo/shared/widgets/app_scaffold.dart';
 import 'package:recomiendalo/shared/widgets/primary_button.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+  State<LoginScreen> createState() => _LoginScreenState();
+}
 
+class _LoginScreenState extends State<LoginScreen> {
+  String completePhoneNumber = '';
+  final _passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
     return AppScaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -30,7 +37,7 @@ class LoginScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // 🖋️ Título más formal y moderno
+                  // 🖋️ Título
                   Text(
                     'Recomiéndalo',
                     textAlign: TextAlign.center,
@@ -51,7 +58,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 28),
 
-                  // 🧱 Card principal con inputs y botones
+                  // 🧱 Card principal
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(
@@ -69,11 +76,10 @@ class LoginScreen extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        // ✉️ Correo electrónico
-                        TextFormField(
+                        // 📱 Campo de teléfono con intl_phone_field
+                        IntlPhoneField(
                           decoration: InputDecoration(
-                            labelText: 'Correo electrónico',
-                            prefixIcon: const Icon(Icons.email_outlined),
+                            labelText: 'Número de celular',
                             filled: true,
                             fillColor: Colors.grey[50],
                             border: OutlineInputBorder(
@@ -81,11 +87,20 @@ class LoginScreen extends StatelessWidget {
                               borderSide: BorderSide.none,
                             ),
                           ),
+                          initialCountryCode: 'PE',
+                          dropdownTextStyle: const TextStyle(
+                            color: Colors.black87,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          onChanged: (phone) {
+                            completePhoneNumber = phone.completeNumber;
+                          },
                         ),
                         const SizedBox(height: 18),
 
                         // 🔒 Contraseña
                         TextFormField(
+                          controller: _passwordController,
                           obscureText: true,
                           decoration: InputDecoration(
                             labelText: 'Contraseña',
@@ -103,7 +118,11 @@ class LoginScreen extends StatelessWidget {
                         // 🔘 Botón Entrar
                         PrimaryButton(
                           text: 'Entrar',
-                          onPressed: () => context.go('/home'),
+                          onPressed: () {
+                            final password = _passwordController.text.trim();
+                            debugPrint('📞 $completePhoneNumber / 🔑 $password');
+                            context.go('/home');
+                          },
                         ),
                         const SizedBox(height: 14),
 
