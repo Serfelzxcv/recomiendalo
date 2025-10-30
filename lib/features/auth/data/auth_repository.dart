@@ -69,6 +69,7 @@ class AuthRepository {
 
   /// 🧾 Registrar usuario
   Future<bool> register(RegisterModel model) async {
+    print(model);
     try {
       final Response res = await _service.registerUser(model);
 
