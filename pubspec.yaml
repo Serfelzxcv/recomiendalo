@@ -52,4 +52,7 @@ flutter:
   assets:
     - .env
     - assets/images/workers_without_background.png
+    - assets/images/register.png
+    - assets/images/otp.png
+    - assets/images/security.png
     # - assets/icons/

@@ -172,15 +172,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _buildStepContent(ColorScheme colors, TextTheme t) {
     switch (_step) {
+      // Paso 1 - Datos personales
       case 0:
         return Form(
           key: _formKeyStep1,
           child: ListView(
             key: const ValueKey('step1'),
             children: [
-              Text('Datos personales',
-                  style: t.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center),
+              Text(
+                'Datos personales',
+                style: t.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 32),
               AppTextField(
                 label: 'Nombres',
@@ -206,19 +209,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   return null;
                 },
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final maxHeight = constraints.maxHeight * 0.35;
+                      return Image.asset(
+                        'assets/images/register.png',
+                        height: maxHeight.clamp(140, 240),
+                        fit: BoxFit.contain,
+                      );
+                    },
+                  ),
+                ),
+              ),
             ],
           ),
         );
 
+      // Paso 2 - Seguridad
       case 1:
         return Form(
           key: _formKeyStep2,
           child: ListView(
             key: const ValueKey('step2'),
             children: [
-              Text('Seguridad y contacto',
-                  style: t.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center),
+              Text(
+                'Seguridad y contacto',
+                style: t.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 32),
               AppTextField(
                 label: 'Contraseña',
@@ -250,19 +271,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 onChanged: (phone) =>
                     _phoneController.text = phone.completeNumber,
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final maxHeight = constraints.maxHeight * 0.35;
+                      return Image.asset(
+                        'assets/images/security.png',
+                        height: maxHeight.clamp(140, 240),
+                        fit: BoxFit.contain,
+                      );
+                    },
+                  ),
+                ),
+              ),
             ],
           ),
         );
 
+      // Paso 3 - OTP
       default:
         return Form(
           key: _formKeyStep3,
           child: ListView(
             key: const ValueKey('step3'),
             children: [
-              Text('Verifica tu teléfono',
-                  style: t.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center),
+              Text(
+                'Verifica tu teléfono',
+                style: t.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 32),
               AppTextField(
                 label: 'Código OTP',
@@ -270,6 +309,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 keyboardType: TextInputType.number,
                 validator: (v) =>
                     v == null || v.isEmpty ? 'Ingrese el código' : null,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final maxHeight = constraints.maxHeight * 0.35;
+                      return Image.asset(
+                        'assets/images/otp.png',
+                        height: maxHeight.clamp(140, 240),
+                        fit: BoxFit.contain,
+                      );
+                    },
+                  ),
+                ),
               ),
             ],
           ),
@@ -302,16 +356,19 @@ class _StepHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Text(text,
-            style: Theme.of(context)
-                .textTheme
-                .labelMedium
-                ?.copyWith(color: active ? colors.primary : Colors.grey[600])),
+        Text(
+          text,
+          style: Theme.of(context)
+              .textTheme
+              .labelMedium
+              ?.copyWith(color: active ? colors.primary : Colors.grey[600]),
+        ),
       ]);
     }
 
-    Widget line(bool filled) =>
-        Expanded(child: Container(height: 2, color: filled ? colors.primary : Colors.grey[300]));
+    Widget line(bool filled) => Expanded(
+        child: Container(
+            height: 2, color: filled ? colors.primary : Colors.grey[300]));
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -375,7 +432,6 @@ class _BottomActions extends StatelessWidget {
   }
 }
 
-/// 🔹 Link “¿Ya tienes una cuenta?”
 class _LoginRedirect extends StatelessWidget {
   final VoidCallback onTap;
   const _LoginRedirect({required this.onTap});
