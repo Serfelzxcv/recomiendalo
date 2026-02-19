@@ -1,6 +1,7 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:recomiendalo/core/theme/theme_mode_provider.dart';
 import 'package:recomiendalo/shared/models/user_mode.dart';
 import 'package:recomiendalo/shared/providers/user_mode_provider.dart';
 import 'package:recomiendalo/core/router/app_routes.dart';
@@ -14,10 +15,20 @@ class AppDrawer extends ConsumerWidget {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final modeState = ref.watch(userModeProvider);
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark;
 
     final mode = modeState.value ?? UserMode.employer;
 
     return Drawer(
+      shape: RoundedRectangleBorder(
+        side: BorderSide(
+          color: colors.outline.withValues(
+            alpha: Theme.of(context).brightness == Brightness.dark ? 0.45 : 0.2,
+          ),
+          width: 1.2,
+        ),
+      ),
       child: SafeArea(
         child: Column(
           children: [
@@ -28,7 +39,7 @@ class AppDrawer extends ConsumerWidget {
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundColor: colors.primary.withOpacity(0.15),
+                    backgroundColor: colors.primary.withValues(alpha: 0.15),
                     child: Icon(
                       Icons.person,
                       size: 32,
@@ -40,18 +51,25 @@ class AppDrawer extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Usuario Demo',
-                            style: textTheme.titleMedium?.copyWith(
-                              color: colors.onSurface,
-                              fontWeight: FontWeight.bold,
-                            )),
-                        Text('demo@correo.com',
-                            style: textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
-                            )),
+                        Text(
+                          'Usuario Demo',
+                          style: textTheme.titleMedium?.copyWith(
+                            color: colors.onSurface,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'demo@correo.com',
+                          style: textTheme.bodySmall?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                        ),
                         const SizedBox(height: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             border: Border.all(color: colors.primary),
                             borderRadius: BorderRadius.circular(8),
@@ -106,34 +124,35 @@ class AppDrawer extends ConsumerWidget {
                       title: 'Conectar con trabajadores',
                       route: AppRoutes.connect,
                     ),
-                  ]else ...[
+                  ] else ...[
                     _buildTile(
-                        context,
-                        icon: Icons.build_outlined,
-                        title: 'Mi Perfil',
-                        route: AppRoutes.profile,
-                      ),
+                      context,
+                      icon: Icons.build_outlined,
+                      title: 'Mi Perfil',
+                      route: AppRoutes.profile,
+                    ),
                     _buildTile(
-                        context,
-                        icon: Icons.local_offer_outlined,
-                        title: 'Mis ofertas',
-                        route: AppRoutes.myOffers,
-                        badgeCount: 1,
+                      context,
+                      icon: Icons.local_offer_outlined,
+                      title: 'Mis ofertas',
+                      route: AppRoutes.myOffers,
+                      badgeCount: 1,
+                    ),
+                    ListTile(
+                      leading: const Icon(
+                        Icons.work_history_outlined,
+                        color: Colors.grey,
                       ),
-                      ListTile(
-                        leading: const Icon(Icons.work_history_outlined, color: Colors.grey),
-                        title: Text(
-                          'Trabajos en curso (Próximamente)',
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey,
-                            fontStyle: FontStyle.italic,
-                          ),
+                      title: Text(
+                        'Trabajos en curso (Próximamente)',
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey,
+                          fontStyle: FontStyle.italic,
                         ),
-                        enabled: false,
                       ),
-                    ],
-
-
+                      enabled: false,
+                    ),
+                  ],
 
                   // ListTile(
                   //   leading: const Icon(Icons.chat_bubble_outline, color: Colors.grey),
@@ -149,7 +168,10 @@ class AppDrawer extends ConsumerWidget {
                   const Divider(),
 
                   ListTile(
-                    leading: const Icon(Icons.chat_bubble_outline, color: Colors.grey),
+                    leading: const Icon(
+                      Icons.chat_bubble_outline,
+                      color: Colors.grey,
+                    ),
                     title: Text(
                       'Chat (Próximamente)',
                       style: textTheme.bodyMedium?.copyWith(
@@ -161,7 +183,10 @@ class AppDrawer extends ConsumerWidget {
                   ),
 
                   ListTile(
-                    leading: const Icon(Icons.settings_outlined, color: Colors.grey),
+                    leading: const Icon(
+                      Icons.settings_outlined,
+                      color: Colors.grey,
+                    ),
                     title: Text(
                       'Configuración (Próximamente)',
                       style: textTheme.bodyMedium?.copyWith(
@@ -170,6 +195,55 @@ class AppDrawer extends ConsumerWidget {
                       ),
                     ),
                     enabled: false,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.palette_outlined,
+                          color: colors.onSurface,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Tema',
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: colors.onSurface,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 36,
+                          child: ToggleButtons(
+                            borderRadius: BorderRadius.circular(10),
+                            constraints: const BoxConstraints(
+                              minHeight: 36,
+                              minWidth: 40,
+                            ),
+                            isSelected: [!isDark, isDark],
+                            onPressed: (index) {
+                              ref
+                                  .read(themeModeProvider.notifier)
+                                  .setMode(
+                                    index == 0
+                                        ? ThemeMode.light
+                                        : ThemeMode.dark,
+                                  );
+                            },
+                            children: const [
+                              Icon(Icons.light_mode_rounded, size: 16),
+                              Icon(Icons.dark_mode_rounded, size: 16),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
 
                   _buildTile(
@@ -200,12 +274,10 @@ class AppDrawer extends ConsumerWidget {
                     showGeneralDialog(
                       context: context,
                       barrierDismissible: false,
-                      barrierColor: Colors.black.withOpacity(0.4),
+                      barrierColor: Colors.black.withValues(alpha: 0.4),
                       transitionDuration: const Duration(milliseconds: 200),
-                      pageBuilder: (_, __, ___) {
-                        return const Center(
-                          child: SwitchingModeDialog(),
-                        );
+                      pageBuilder: (context, animation, secondaryAnimation) {
+                        return const Center(child: SwitchingModeDialog());
                       },
                     );
 
@@ -222,8 +294,9 @@ class AppDrawer extends ConsumerWidget {
 
                     await Future.delayed(const Duration(milliseconds: 100));
                     if (context.mounted) {
-                      final refreshParam = DateTime.now().millisecondsSinceEpoch;
-                      context.go("${AppRoutes.home}?refresh=$refreshParam");
+                      final refreshParam =
+                          DateTime.now().millisecondsSinceEpoch;
+                      context.go('${AppRoutes.home}?refresh=$refreshParam');
                     }
                   },
 
@@ -257,14 +330,11 @@ class AppDrawer extends ConsumerWidget {
 
     return ListTile(
       selected: isSelected,
-      selectedTileColor: colors.primary.withOpacity(0.08),
+      selectedTileColor: colors.primary.withValues(alpha: 0.08),
       leading: Stack(
         clipBehavior: Clip.none,
         children: [
-          Icon(
-            icon,
-            color: isSelected ? colors.primary : colors.onSurface,
-          ),
+          Icon(icon, color: isSelected ? colors.primary : colors.onSurface),
           if (badgeCount != null && badgeCount > 0)
             Positioned(
               right: -6,
@@ -298,12 +368,3 @@ class AppDrawer extends ConsumerWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-

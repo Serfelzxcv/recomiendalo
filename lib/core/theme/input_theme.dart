@@ -26,13 +26,14 @@ class AppInputTheme {
     filled: true,
     fillColor: const Color(0xFF1E1E1E),
     hintStyle: TextStyle(color: Colors.grey[500]),
+    contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: Colors.white.withOpacity(0.12)),
+      borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: Colors.white.withOpacity(0.12)),
+      borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:recomiendalo/features/auth/data/auth_repository.dart';
 import 'package:recomiendalo/features/auth/models/register_model.dart';
 import 'package:recomiendalo/shared/widgets/app_scaffold.dart';
-import 'package:recomiendalo/shared/widgets/inputs/secondary_button.dart';
+import 'package:recomiendalo/shared/widgets/secondary_button.dart';
 import 'package:recomiendalo/shared/widgets/primary_button.dart';
 import 'package:recomiendalo/shared/widgets/inputs/app_text_field.dart';
 
@@ -21,7 +20,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _lastnameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _otpController = TextEditingController();
@@ -37,8 +35,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final formKey = _step == 0
         ? _formKeyStep1
         : _step == 1
-            ? _formKeyStep2
-            : _formKeyStep3;
+        ? _formKeyStep2
+        : _formKeyStep3;
 
     if (formKey.currentState?.validate() ?? false) {
       setState(() => _step++);
@@ -56,68 +54,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
     try {
       debugPrint('🟢 Entrando a _onFinish() en step $_step');
 
-      // Paso 1 → Enviar OTP
-      if (_step == 1) {
-        final phone = _phoneController.text.trim();
+      if (_step == 2) {
+        final fullName =
+            '${_nameController.text.trim()} ${_lastnameController.text.trim()}';
+        final model = RegisterModel(
+          fullName: fullName,
+          email: _emailController.text.trim(),
+          phone: '',
+          password: _passwordController.text.trim(),
+        );
 
-        if (phone.isEmpty) {
+        final success = await _repo.register(model);
+        if (!mounted) return;
+
+        if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Ingrese un número válido')),
+            const SnackBar(content: Text('Usuario registrado correctamente')),
           );
-          return;
-        }
-
-        final sent = await _repo.sendOtp(phone);
-
-        if (sent) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('OTP enviado correctamente')),
-          );
-          setState(() => _step = 2);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('❌ No se pudo enviar el OTP')),
-          );
-        }
-      }
-
-      // Paso 2 → Verificar OTP y registrar usuario
-      else if (_step == 2) {
-        final phone = _phoneController.text.trim();
-        final code = _otpController.text.trim();
-
-        final verified = await _repo.verifyOtp(phone, code);
-
-        if (verified) {
-          final fullName =
-              '${_nameController.text.trim()} ${_lastnameController.text.trim()}';
-          final model = RegisterModel(
-            fullName: fullName,
-            email: _emailController.text.trim(),
-            phone: phone,
-            password: _passwordController.text.trim(),
-          );
-
-          final success = await _repo.register(model);
-
-          if (success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Usuario registrado correctamente')),
-            );
-            if (mounted) context.go('/login');
-          }
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Código OTP incorrecto o expirado')),
-          );
+          context.go('/login');
         }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
-      setState(() => _loading = false);
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -236,7 +199,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             key: const ValueKey('step2'),
             children: [
               Text(
-                'Seguridad y contacto',
+                'Seguridad',
                 style: t.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
@@ -261,16 +224,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
-              IntlPhoneField(
-                decoration: const InputDecoration(
-                  labelText: 'Teléfono',
-                  border: OutlineInputBorder(),
-                ),
-                initialCountryCode: 'PE',
-                onChanged: (phone) =>
-                    _phoneController.text = phone.completeNumber,
-              ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 24),
                 child: Center(
@@ -290,7 +243,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         );
 
-      // Paso 3 - OTP
+      // Paso 3 - Validación
       default:
         return Form(
           key: _formKeyStep3,
@@ -298,13 +251,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
             key: const ValueKey('step3'),
             children: [
               Text(
-                'Verifica tu teléfono',
+                'Validación',
                 style: t.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
               AppTextField(
-                label: 'Código OTP',
+                label: 'Código de validación',
                 controller: _otpController,
                 keyboardType: TextInputType.number,
                 validator: (v) =>
@@ -340,35 +293,39 @@ class _StepHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     Widget circle(bool active, String text) {
-      return Column(children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          width: 28,
-          height: 28,
-          decoration: BoxDecoration(
-            color: active ? colors.primary : Colors.grey[300],
-            shape: BoxShape.circle,
+      return Column(
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: active ? colors.primary : Colors.grey[300],
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              active ? Icons.check : Icons.circle,
+              size: active ? 16 : 10,
+              color: active ? colors.onPrimary : Colors.grey[600],
+            ),
           ),
-          child: Icon(
-            active ? Icons.check : Icons.circle,
-            size: active ? 16 : 10,
-            color: active ? colors.onPrimary : Colors.grey[600],
+          const SizedBox(height: 4),
+          Text(
+            text,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: active ? colors.primary : Colors.grey[600],
+            ),
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          text,
-          style: Theme.of(context)
-              .textTheme
-              .labelMedium
-              ?.copyWith(color: active ? colors.primary : Colors.grey[600]),
-        ),
-      ]);
+        ],
+      );
     }
 
     Widget line(bool filled) => Expanded(
-        child: Container(
-            height: 2, color: filled ? colors.primary : Colors.grey[300]));
+      child: Container(
+        height: 2,
+        color: filled ? colors.primary : Colors.grey[300],
+      ),
+    );
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -377,7 +334,7 @@ class _StepHeader extends StatelessWidget {
         line(current >= 1),
         circle(current >= 1, 'Seguridad'),
         line(current >= 2),
-        circle(current >= 2, 'OTP'),
+        circle(current >= 2, 'Validación'),
       ],
     );
   }
@@ -401,34 +358,33 @@ class _BottomActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLastStep = step == 2;
-    final isSendOtpStep = step == 1;
 
-    return Row(children: [
-      if (step > 0)
+    return Row(
+      children: [
+        if (step > 0)
+          Expanded(
+            child: SecondaryButton(
+              text: 'Atrás',
+              onPressed: loading ? () {} : onPrev,
+            ),
+          ),
+        if (step > 0) const SizedBox(width: 12),
         Expanded(
-          child: SecondaryButton(
-            text: 'Atrás',
-            onPressed: loading ? () {} : onPrev,
+          child: PrimaryButton(
+            text: isLastStep ? 'Finalizar' : 'Siguiente',
+            onPressed: loading
+                ? () {}
+                : () {
+                    if (isLastStep) {
+                      onFinish();
+                    } else {
+                      onNext();
+                    }
+                  },
           ),
         ),
-      if (step > 0) const SizedBox(width: 12),
-      Expanded(
-        child: PrimaryButton(
-          text: isSendOtpStep
-              ? 'Enviar código'
-              : (isLastStep ? 'Finalizar' : 'Siguiente'),
-          onPressed: loading
-              ? () {}
-              : () {
-                  if (isSendOtpStep || isLastStep) {
-                    onFinish();
-                  } else {
-                    onNext();
-                  }
-                },
-        ),
-      ),
-    ]);
+      ],
+    );
   }
 }
 

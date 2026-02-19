@@ -31,6 +31,7 @@ class AppTheme {
 
   static ThemeData dark() {
     final base = ThemeData.dark(useMaterial3: true);
+    
     return base.copyWith(
       colorScheme: AppColorSchemes.darkScheme,
       textTheme: GoogleFonts.interTextTheme(base.textTheme),

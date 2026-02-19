@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class PrimaryButton extends StatelessWidget {
-  const PrimaryButton({
+class SecondaryButton extends StatelessWidget {
+  const SecondaryButton({
     super.key,
     required this.text,
     required this.onPressed,
     this.fullWidth = true,
     this.loading = false,
     this.icon,
-    this.style, // opcional: overrides puntuales sin romper el theme
+    this.style, // opcional: overrides puntuales
   });
 
   final String text;
@@ -41,7 +41,7 @@ class PrimaryButton extends StatelessWidget {
 
     return SizedBox(
       width: fullWidth ? double.infinity : null,
-      child: FilledButton(
+      child: OutlinedButton(
         onPressed: loading ? null : onPressed,
         style: style, // si es null, usa 100% el theme
         child: child,
