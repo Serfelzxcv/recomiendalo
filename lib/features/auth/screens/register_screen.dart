@@ -119,6 +119,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 _BottomActions(
                   step: _step,
                   onPrev: _prevStep,
+                  onBackToLogin: () => context.go('/login'),
                   onNext: _nextStep,
                   onFinish: _onFinish,
                   loading: _loading,
@@ -344,12 +345,14 @@ class _BottomActions extends StatelessWidget {
   final int step;
   final bool loading;
   final VoidCallback onPrev;
+  final VoidCallback onBackToLogin;
   final VoidCallback onNext;
   final Future<void> Function() onFinish;
 
   const _BottomActions({
     required this.step,
     required this.onPrev,
+    required this.onBackToLogin,
     required this.onNext,
     required this.onFinish,
     required this.loading,
@@ -361,14 +364,13 @@ class _BottomActions extends StatelessWidget {
 
     return Row(
       children: [
-        if (step > 0)
-          Expanded(
-            child: SecondaryButton(
-              text: 'Atrás',
-              onPressed: loading ? () {} : onPrev,
-            ),
+        Expanded(
+          child: SecondaryButton(
+            text: 'Atrás',
+            onPressed: loading ? () {} : (step == 0 ? onBackToLogin : onPrev),
           ),
-        if (step > 0) const SizedBox(width: 12),
+        ),
+        const SizedBox(width: 12),
         Expanded(
           child: PrimaryButton(
             text: isLastStep ? 'Finalizar' : 'Siguiente',
