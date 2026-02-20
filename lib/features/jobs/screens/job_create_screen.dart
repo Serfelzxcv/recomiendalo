@@ -13,6 +13,7 @@ import 'package:recomiendalo/shared/widgets/inputs/app_image_picker.dart';
 import 'package:recomiendalo/shared/widgets/app_drawer.dart';
 import 'package:recomiendalo/shared/widgets/inputs/app_tags_input.dart';
 import 'package:recomiendalo/shared/providers/user_mode_provider.dart';
+import 'package:recomiendalo/shared/widgets/secondary_button.dart';
 
 class JobCreateScreen extends ConsumerStatefulWidget {
   const JobCreateScreen({super.key});
@@ -91,40 +92,26 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
               children: [
                 if (_step > 0)
                   Expanded(
-                    child: PrimaryButton(
-                      text: 'Atrás',
-                      onPressed: _prevStep,
-                    ),
+                    child: PrimaryButton(text: 'Atrás', onPressed: _prevStep),
                   ),
                 if (_step > 0) const SizedBox(width: 12),
                 Expanded(
-                  child: SizedBox(
-                    height: 48,
-                    child: FilledButton(
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      onPressed: () {
-                        if (_step < 2) {
-                          _nextStep();
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Trabajo publicado: ${_titleController.text}',
-                              ),
+                  child: SecondaryButton(
+                    text: _step < 2 ? 'Siguiente' : 'Publicar',
+                    onPressed: () {
+                      if (_step < 2) {
+                        _nextStep();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Trabajo publicado: ${_titleController.text}',
                             ),
-                          );
-                          context.pop();
-                        }
-                      },
-                      child: Text(_step < 2 ? 'Siguiente' : 'Publicar'),
-                    ),
+                          ),
+                        );
+                        context.pop();
+                      }
+                    },
                   ),
                 ),
               ],
@@ -168,8 +155,14 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
                 value: _category,
                 onChanged: (val) => setState(() => _category = val),
                 items: const [
-                  DropdownMenuItem(value: 'Carpintería', child: Text('Carpintería')),
-                  DropdownMenuItem(value: 'Electricidad', child: Text('Electricidad')),
+                  DropdownMenuItem(
+                    value: 'Carpintería',
+                    child: Text('Carpintería'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'Electricidad',
+                    child: Text('Electricidad'),
+                  ),
                   DropdownMenuItem(value: 'Limpieza', child: Text('Limpieza')),
                   DropdownMenuItem(value: 'Otros', child: Text('Otros')),
                 ],
@@ -210,7 +203,10 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
                 items: const [
                   DropdownMenuItem(value: 'Yape', child: Text('Yape')),
                   DropdownMenuItem(value: 'Plin', child: Text('Plin')),
-                  DropdownMenuItem(value: 'Transferencia', child: Text('Transferencia')),
+                  DropdownMenuItem(
+                    value: 'Transferencia',
+                    child: Text('Transferencia'),
+                  ),
                   DropdownMenuItem(value: 'Efectivo', child: Text('Efectivo')),
                 ],
               ),
@@ -261,7 +257,10 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
               const SizedBox(height: 16),
 
               _SummaryItem(label: 'Título', value: _titleController.text),
-              _SummaryItem(label: 'Descripción', value: _descriptionController.text),
+              _SummaryItem(
+                label: 'Descripción',
+                value: _descriptionController.text,
+              ),
               _SummaryItem(label: 'Categoría', value: _category ?? '—'),
               _SummaryItem(label: 'Etiquetas', value: _tags.join(', ')),
               _SummaryItem(
@@ -269,7 +268,10 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
                 value: _isRemote ? 'Remoto' : 'Presencial',
               ),
               if (!_isRemote)
-                _SummaryItem(label: 'Ubicación', value: _locationController.text),
+                _SummaryItem(
+                  label: 'Ubicación',
+                  value: _locationController.text,
+                ),
               _SummaryItem(
                 label: 'Presupuesto',
                 value: _budgetController.text.isEmpty
@@ -282,7 +284,10 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
               ),
 
               const SizedBox(height: 20),
-              Text('Imágenes', style: t.titleMedium?.copyWith(color: Colors.grey[700])),
+              Text(
+                'Imágenes',
+                style: t.titleMedium?.copyWith(color: Colors.grey[700]),
+              ),
               const SizedBox(height: 8),
 
               if (_images.isEmpty)
@@ -390,10 +395,7 @@ class _SummaryItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,
-              style: t.labelMedium?.copyWith(
-                color: Colors.grey[600],
-              )),
+          Text(label, style: t.labelMedium?.copyWith(color: Colors.grey[600])),
           const SizedBox(height: 4),
           Text(value.isEmpty ? '—' : value, style: t.bodyMedium),
         ],
