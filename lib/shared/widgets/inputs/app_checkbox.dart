@@ -14,20 +14,22 @@ class AppCheckbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-return Container(
-  decoration: BoxDecoration(
-    border: Border.all(color: Colors.grey.shade300),
-    borderRadius: BorderRadius.circular(12),
-    color: Colors.white,
-  ),
-  child: CheckboxListTile(
-    value: value,
-    onChanged: onChanged,
-    title: Text(label),
-    controlAffinity: ListTileControlAffinity.leading,
-    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-  ),
-);
-
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: colors.outline.withValues(alpha: 0.45)),
+        borderRadius: BorderRadius.circular(12),
+        color: colors.surface,
+      ),
+      child: CheckboxListTile(
+        value: value,
+        onChanged: onChanged,
+        title: Text(label),
+        activeColor: colors.primary,
+        checkColor: colors.onPrimary,
+        controlAffinity: ListTileControlAffinity.leading,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+      ),
+    );
   }
 }

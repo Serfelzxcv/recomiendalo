@@ -42,13 +42,19 @@ class _AppImagePickerState extends State<AppImagePicker> {
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Imágenes', style: t.titleMedium),
         const SizedBox(height: 6),
-        Text(widget.label, style: t.labelSmall?.copyWith(color: Colors.grey[600])),
+        Text(
+          widget.label,
+          style: t.labelSmall?.copyWith(
+            color: colors.onSurface.withValues(alpha: 0.68),
+          ),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -73,9 +79,9 @@ class _AppImagePickerState extends State<AppImagePicker> {
                     child: GestureDetector(
                       onTap: () => _removeImage(file),
                       child: Container(
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.black54,
+                          color: colors.scrim.withValues(alpha: 0.45),
                         ),
                         padding: const EdgeInsets.all(2),
                         child: const Icon(
@@ -85,7 +91,7 @@ class _AppImagePickerState extends State<AppImagePicker> {
                         ),
                       ),
                     ),
-                  )
+                  ),
                 ],
               );
             }),
@@ -96,11 +102,17 @@ class _AppImagePickerState extends State<AppImagePicker> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
+                  border: Border.all(
+                    color: colors.outline.withValues(alpha: 0.5),
+                  ),
                   borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey.shade100,
+                  color: colors.surface.withValues(alpha: 0.8),
                 ),
-                child: const Icon(Icons.add, size: 30, color: Colors.grey),
+                child: Icon(
+                  Icons.add,
+                  size: 30,
+                  color: colors.onSurface.withValues(alpha: 0.55),
+                ),
               ),
             ),
           ],

@@ -6,15 +6,15 @@ class AppInputTheme {
   static final light = InputDecorationTheme(
     filled: true,
     fillColor: AppColors.white,
-    hintStyle: TextStyle(color: Colors.grey[500]),
+    hintStyle: TextStyle(color: AppColors.grayDark.withValues(alpha: 0.65)),
     contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: Colors.grey[300]!),
+      borderSide: const BorderSide(color: AppColors.grayLight),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: Colors.grey[300]!),
+      borderSide: const BorderSide(color: AppColors.grayLight),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
@@ -24,16 +24,16 @@ class AppInputTheme {
 
   static final dark = InputDecorationTheme(
     filled: true,
-    fillColor: const Color(0xFF1E1E1E),
-    hintStyle: TextStyle(color: Colors.grey[500]),
+    fillColor: AppColors.surfaceDark,
+    hintStyle: TextStyle(color: AppColors.grayLight.withValues(alpha: 0.65)),
     contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+      borderSide: BorderSide(color: AppColors.grayDark.withValues(alpha: 0.7)),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+      borderSide: BorderSide(color: AppColors.grayDark.withValues(alpha: 0.7)),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),

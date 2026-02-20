@@ -294,6 +294,8 @@ class _StepHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     Widget circle(bool active, String text) {
+      final inactive = colors.onSurface.withValues(alpha: 0.25);
+      final inactiveText = colors.onSurface.withValues(alpha: 0.6);
       return Column(
         children: [
           AnimatedContainer(
@@ -301,20 +303,20 @@ class _StepHeader extends StatelessWidget {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: active ? colors.primary : Colors.grey[300],
+              color: active ? colors.primary : inactive,
               shape: BoxShape.circle,
             ),
             child: Icon(
               active ? Icons.check : Icons.circle,
               size: active ? 16 : 10,
-              color: active ? colors.onPrimary : Colors.grey[600],
+              color: active ? colors.onPrimary : inactiveText,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             text,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: active ? colors.primary : Colors.grey[600],
+              color: active ? colors.primary : inactiveText,
             ),
           ),
         ],
@@ -324,7 +326,7 @@ class _StepHeader extends StatelessWidget {
     Widget line(bool filled) => Expanded(
       child: Container(
         height: 2,
-        color: filled ? colors.primary : Colors.grey[300],
+        color: filled ? colors.primary : colors.outline.withValues(alpha: 0.35),
       ),
     );
 

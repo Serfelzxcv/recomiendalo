@@ -14,7 +14,7 @@ class AppDrawerTheme {
   );
 
   static const dark = DrawerThemeData(
-    backgroundColor: Color(0xFF1E1E1E),
+    backgroundColor: AppColors.surfaceDark,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.only(
         topRight: Radius.circular(24),

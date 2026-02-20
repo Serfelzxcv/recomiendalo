@@ -26,12 +26,8 @@ class AppScaffold extends StatelessWidget {
       appBar: appBar,
       drawer: drawer,
       floatingActionButton: floatingActionButton,
-      backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.background,
-      body: SafeArea(
-        top: safeAreaTop,
-        bottom: safeAreaBottom,
-        child: body,
-      ),
+      backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.surface,
+      body: SafeArea(top: safeAreaTop, bottom: safeAreaBottom, child: body),
     );
   }
 }

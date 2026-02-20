@@ -8,9 +8,7 @@ class AppButtonTheme {
     style: FilledButton.styleFrom(
       backgroundColor: AppColors.primary,
       foregroundColor: AppColors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       textStyle: const TextStyle(fontWeight: FontWeight.bold),
       minimumSize: const Size.fromHeight(48),
     ),
@@ -21,9 +19,7 @@ class AppButtonTheme {
     style: FilledButton.styleFrom(
       backgroundColor: AppColors.primary,
       foregroundColor: AppColors.black,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       textStyle: const TextStyle(fontWeight: FontWeight.bold),
       minimumSize: const Size.fromHeight(48),
     ),
@@ -32,24 +28,23 @@ class AppButtonTheme {
   // Botón secundario (contorno)
   static final outlinedLight = OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
-      side: const BorderSide(color: AppColors.black, width: 1.2),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      side: const BorderSide(color: AppColors.grayDark, width: 1.2),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       minimumSize: const Size.fromHeight(48),
-      foregroundColor: AppColors.black,
+      foregroundColor: AppColors.grayDark,
       textStyle: const TextStyle(fontWeight: FontWeight.w500),
     ),
   );
 
   static final outlinedDark = OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
-      side: const BorderSide(color: AppColors.white, width: 1.2),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+      side: BorderSide(
+        color: AppColors.grayLight.withValues(alpha: 0.75),
+        width: 1.2,
       ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       minimumSize: const Size.fromHeight(48),
-      foregroundColor: AppColors.white,
+      foregroundColor: AppColors.grayLight,
       textStyle: const TextStyle(fontWeight: FontWeight.w500),
     ),
   );

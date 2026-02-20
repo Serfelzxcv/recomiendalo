@@ -5,11 +5,7 @@ class AppCard extends StatelessWidget {
   final String title;
   final IconData icon;
 
-  const AppCard({
-    super.key,
-    required this.title,
-    required this.icon,
-  });
+  const AppCard({super.key, required this.title, required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -17,20 +13,20 @@ class AppCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Card(
-      elevation: 2,
+      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: Colors.grey.shade300, // Color del borde
-          width: 1.2,                  // Grosor del borde
+          color: colors.outline.withValues(alpha: 0.35),
+          width: 1.2,
         ),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("$title (demo)")),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("$title (demo)")));
         },
         child: Center(
           child: Column(

@@ -9,16 +9,17 @@ class AppCardTheme {
     margin: const EdgeInsets.all(8),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(16),
-      side: BorderSide(color: Colors.grey[200]!),
+      side: const BorderSide(color: AppColors.grayLight),
     ),
   );
 
   static final dark = CardThemeData(
     elevation: 0,
+    color: AppColors.surfaceDark,
     margin: const EdgeInsets.all(8),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(16),
-      side: BorderSide(color: Colors.white.withOpacity(0.1)),
+      side: BorderSide(color: AppColors.grayDark.withValues(alpha: 0.5)),
     ),
   );
 }

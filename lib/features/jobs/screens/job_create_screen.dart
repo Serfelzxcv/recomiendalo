@@ -231,7 +231,11 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
                 const SizedBox(height: 8),
                 Text(
                   'Indica distrito/ciudad para que el colaborador evalúe tiempos y costos.',
-                  style: t.bodySmall?.copyWith(color: Colors.grey[600]),
+                  style: t.bodySmall?.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.65),
+                  ),
                 ),
               ],
               const SizedBox(height: 28),
@@ -286,7 +290,11 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
               const SizedBox(height: 20),
               Text(
                 'Imágenes',
-                style: t.titleMedium?.copyWith(color: Colors.grey[700]),
+                style: t.titleMedium?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.75),
+                ),
               ),
               const SizedBox(height: 8),
 
@@ -312,7 +320,11 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
               const SizedBox(height: 12),
               Text(
                 'Así lo verá el colaborador cuando entre al detalle del trabajo.',
-                style: t.bodySmall?.copyWith(color: Colors.grey[600]),
+                style: t.bodySmall?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.65),
+                ),
               ),
             ],
           ),
@@ -333,15 +345,17 @@ class _StepHeader extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
 
     Widget dot(bool active, String text) {
+      final inactive = colors.onSurface.withValues(alpha: 0.25);
+      final inactiveIcon = colors.onSurface.withValues(alpha: 0.55);
       return Column(
         children: [
           CircleAvatar(
             radius: 14,
-            backgroundColor: active ? colors.primary : Colors.grey[300],
+            backgroundColor: active ? colors.primary : inactive,
             child: Icon(
               active ? Icons.check : Icons.circle,
               size: active ? 14 : 8,
-              color: active ? colors.onPrimary : Colors.grey[600],
+              color: active ? colors.onPrimary : inactiveIcon,
             ),
           ),
           const SizedBox(height: 4),
@@ -355,7 +369,9 @@ class _StepHeader extends StatelessWidget {
         child: Container(
           height: 2,
           margin: const EdgeInsets.symmetric(horizontal: 8),
-          color: filled ? colors.primary : Colors.grey[300],
+          color: filled
+              ? colors.primary
+              : colors.outline.withValues(alpha: 0.35),
         ),
       );
     }
@@ -389,13 +405,18 @@ class _SummaryItem extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: colors.surface,
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: colors.outline.withValues(alpha: 0.35)),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: t.labelMedium?.copyWith(color: Colors.grey[600])),
+          Text(
+            label,
+            style: t.labelMedium?.copyWith(
+              color: colors.onSurface.withValues(alpha: 0.65),
+            ),
+          ),
           const SizedBox(height: 4),
           Text(value.isEmpty ? '—' : value, style: t.bodyMedium),
         ],

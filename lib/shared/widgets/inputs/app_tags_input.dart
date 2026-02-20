@@ -59,7 +59,7 @@ class _AppTagsInputState extends State<AppTagsInput> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           decoration: BoxDecoration(
-            border: Border.all(color: colors.outline.withOpacity(0.5)),
+            border: Border.all(color: colors.outline.withValues(alpha: 0.5)),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
@@ -73,7 +73,7 @@ class _AppTagsInputState extends State<AppTagsInput> {
                     ..._tags.map((tag) {
                       return Chip(
                         label: Text(tag),
-                        backgroundColor: colors.surfaceVariant,
+                        backgroundColor: colors.surfaceContainerHighest,
                         deleteIcon: const Icon(Icons.close, size: 18),
                         onDeleted: () => _removeTag(tag),
                       );
@@ -85,7 +85,9 @@ class _AppTagsInputState extends State<AppTagsInput> {
                         controller: _controller,
                         decoration: InputDecoration(
                           hintText: 'Agregar...',
-                          hintStyle: TextStyle(color: Colors.grey.shade500),
+                          hintStyle: TextStyle(
+                            color: colors.onSurface.withValues(alpha: 0.5),
+                          ),
                           border: InputBorder.none,
                           isDense: true,
                         ),

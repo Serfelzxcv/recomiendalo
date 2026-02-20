@@ -32,17 +32,14 @@ class AppDropdown<T> extends StatelessWidget {
         hintText: hint,
         labelStyle: TextStyle(
           fontSize: 13,
-          color: colors.onSurface.withOpacity(0.7),
+          color: colors.onSurface.withValues(alpha: 0.7),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 12,
           vertical: 10,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
 }
-

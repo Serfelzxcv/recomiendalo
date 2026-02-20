@@ -52,21 +52,19 @@ class _AppTextFieldState extends State<AppTextField> {
         hintText: widget.hint,
         labelStyle: TextStyle(
           fontSize: 13,
-          color: colors.onSurface.withOpacity(0.7),
+          color: colors.onSurface.withValues(alpha: 0.7),
         ),
         hintStyle: TextStyle(
           fontSize: 13,
-          color: Colors.grey[400],
+          color: colors.onSurface.withValues(alpha: 0.45),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 12,
           vertical: 10,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey[300]!),
+          borderSide: BorderSide(color: colors.outline.withValues(alpha: 0.5)),
           borderRadius: BorderRadius.circular(10),
         ),
         errorStyle: const TextStyle(fontSize: 12, color: Colors.red),
@@ -79,7 +77,7 @@ class _AppTextFieldState extends State<AppTextField> {
                       ? Icons.visibility_off_outlined
                       : Icons.visibility_outlined,
                   size: 20,
-                  color: Colors.grey[600],
+                  color: colors.onSurface.withValues(alpha: 0.65),
                 ),
                 onPressed: () {
                   setState(() => _isObscured = !_isObscured);

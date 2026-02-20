@@ -61,7 +61,7 @@ class AppDrawer extends ConsumerWidget {
                         Text(
                           'demo@correo.com',
                           style: textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
+                            color: colors.onSurface.withValues(alpha: 0.65),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -139,14 +139,14 @@ class AppDrawer extends ConsumerWidget {
                       badgeCount: 1,
                     ),
                     ListTile(
-                      leading: const Icon(
+                      leading: Icon(
                         Icons.work_history_outlined,
-                        color: Colors.grey,
+                        color: colors.onSurface.withValues(alpha: 0.45),
                       ),
                       title: Text(
                         'Trabajos en curso (Próximamente)',
                         style: textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey,
+                          color: colors.onSurface.withValues(alpha: 0.45),
                           fontStyle: FontStyle.italic,
                         ),
                       ),
@@ -168,14 +168,14 @@ class AppDrawer extends ConsumerWidget {
                   const Divider(),
 
                   ListTile(
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.chat_bubble_outline,
-                      color: Colors.grey,
+                      color: colors.onSurface.withValues(alpha: 0.45),
                     ),
                     title: Text(
                       'Chat (Próximamente)',
                       style: textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey,
+                        color: colors.onSurface.withValues(alpha: 0.45),
                         fontStyle: FontStyle.italic,
                       ),
                     ),
@@ -183,14 +183,14 @@ class AppDrawer extends ConsumerWidget {
                   ),
 
                   ListTile(
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.settings_outlined,
-                      color: Colors.grey,
+                      color: colors.onSurface.withValues(alpha: 0.45),
                     ),
                     title: Text(
                       'Configuración (Próximamente)',
                       style: textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey,
+                        color: colors.onSurface.withValues(alpha: 0.45),
                         fontStyle: FontStyle.italic,
                       ),
                     ),
@@ -274,7 +274,7 @@ class AppDrawer extends ConsumerWidget {
                     showGeneralDialog(
                       context: context,
                       barrierDismissible: false,
-                      barrierColor: Colors.black.withValues(alpha: 0.4),
+                      barrierColor: colors.scrim.withValues(alpha: 0.4),
                       transitionDuration: const Duration(milliseconds: 200),
                       pageBuilder: (context, animation, secondaryAnimation) {
                         return const Center(child: SwitchingModeDialog());

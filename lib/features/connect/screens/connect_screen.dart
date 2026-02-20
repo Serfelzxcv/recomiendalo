@@ -61,19 +61,21 @@ class _ConnectScreenState extends State<ConnectScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return AppScaffold(
       drawer: const AppDrawer(), // 👈 ya no recibe mode ni onToggleMode
-      appBar: AppBar(
-        title: const Text("Conectar con trabajadores"),
-      ),
+      appBar: AppBar(title: const Text("Conectar con trabajadores")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 🔹 Búsqueda directa por categoría
-            Text("Busca un profesional",
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              "Busca un profesional",
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -81,7 +83,7 @@ class _ConnectScreenState extends State<ConnectScreen> {
                   child: TextField(
                     decoration: InputDecoration(
                       hintText: 'Ejem: "Electricista"',
-                      prefixIcon: const Icon(Icons.search, color: Colors.teal),
+                      prefixIcon: Icon(Icons.search, color: colors.primary),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -107,11 +109,12 @@ class _ConnectScreenState extends State<ConnectScreen> {
             // 🔹 Sección AI
             Row(
               children: [
-                const Icon(Icons.smart_toy_outlined,
-                    color: Colors.teal, size: 32),
+                Icon(Icons.smart_toy_outlined, color: colors.primary, size: 32),
                 const SizedBox(width: 8),
-                Text("Describe tu necesidad",
-                    style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  "Describe tu necesidad",
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -139,8 +142,10 @@ class _ConnectScreenState extends State<ConnectScreen> {
             // 🔹 Resultados sugeridos
             if (showResults) ...[
               const SizedBox(height: 24),
-              Text("Resultados sugeridos:",
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                "Resultados sugeridos:",
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: 12),
               Column(
                 children: currentResults.map((pro) {
@@ -150,9 +155,9 @@ class _ConnectScreenState extends State<ConnectScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: ListTile(
-                      leading: const CircleAvatar(
-                        backgroundColor: Colors.teal,
-                        child: Icon(Icons.person, color: Colors.white),
+                      leading: CircleAvatar(
+                        backgroundColor: colors.primary,
+                        child: Icon(Icons.person, color: colors.onPrimary),
                       ),
                       title: Text(pro["name"]!),
                       subtitle: Text(pro["skill"]!),
@@ -160,8 +165,7 @@ class _ConnectScreenState extends State<ConnectScreen> {
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content:
-                                Text("Abrir perfil de ${pro['name']}..."),
+                            content: Text("Abrir perfil de ${pro['name']}..."),
                           ),
                         );
                       },
