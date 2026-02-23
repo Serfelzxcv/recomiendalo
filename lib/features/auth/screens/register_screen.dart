@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:recomiendalo/features/auth/data/auth_repository.dart';
-import 'package:recomiendalo/features/auth/models/register_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:recomiendalo/shared/widgets/app_scaffold.dart';
 import 'package:recomiendalo/shared/widgets/secondary_button.dart';
 import 'package:recomiendalo/shared/widgets/primary_button.dart';
@@ -19,6 +18,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   final _nameController = TextEditingController();
   final _lastnameController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -28,18 +28,58 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKeyStep2 = GlobalKey<FormState>();
   final _formKeyStep3 = GlobalKey<FormState>();
 
-  final _repo = AuthRepository();
   bool _loading = false;
 
-  void _nextStep() {
+  Future<void> _nextStep() async {
+    if (_loading) return;
+
     final formKey = _step == 0
         ? _formKeyStep1
         : _step == 1
         ? _formKeyStep2
         : _formKeyStep3;
 
-    if (formKey.currentState?.validate() ?? false) {
+    if (!(formKey.currentState?.validate() ?? false)) return;
+
+    if (_step != 1) {
       setState(() => _step++);
+      return;
+    }
+
+    setState(() => _loading = true);
+    try {
+      final fullName =
+          '${_nameController.text.trim()} ${_lastnameController.text.trim()}';
+      await Supabase.instance.client.auth.signUp(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+        data: {
+          'full_name': fullName,
+          'first_name': _nameController.text.trim(),
+          'last_name': _lastnameController.text.trim(),
+          'phone': _phoneController.text.trim(),
+        },
+      );
+
+      if (!mounted) return;
+      setState(() => _step++);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Te enviamos un código de verificación a tu correo'),
+        ),
+      );
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error al registrarse: $e')));
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -49,31 +89,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _onFinish() async {
     if (_loading) return;
+    if (!(_formKeyStep3.currentState?.validate() ?? false)) return;
+
     setState(() => _loading = true);
 
     try {
-      debugPrint('🟢 Entrando a _onFinish() en step $_step');
-
       if (_step == 2) {
-        final fullName =
-            '${_nameController.text.trim()} ${_lastnameController.text.trim()}';
-        final model = RegisterModel(
-          fullName: fullName,
+        await Supabase.instance.client.auth.verifyOTP(
           email: _emailController.text.trim(),
-          phone: '',
-          password: _passwordController.text.trim(),
+          token: _otpController.text.trim(),
+          type: OtpType.email,
         );
-
-        final success = await _repo.register(model);
         if (!mounted) return;
 
-        if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Usuario registrado correctamente')),
-          );
-          context.go('/login');
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Usuario registrado correctamente')),
+        );
+        context.go('/login');
       }
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
@@ -161,6 +199,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: _lastnameController,
                 validator: (v) =>
                     v == null || v.isEmpty ? 'Ingrese sus apellidos' : null,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                label: 'Celular',
+                hint: 'Ej: 987654321',
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                onChanged: (value) {
+                  final digitsOnly = value.replaceAll(RegExp(r'[^0-9]'), '');
+                  if (digitsOnly != value) {
+                    _phoneController.value = TextEditingValue(
+                      text: digitsOnly,
+                      selection: TextSelection.collapsed(
+                        offset: digitsOnly.length,
+                      ),
+                    );
+                  }
+                },
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Ingrese su celular';
+                  if (!RegExp(r'^[0-9]{9,15}$').hasMatch(v)) {
+                    return 'Ingrese un celular válido';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
               AppTextField(
@@ -259,10 +322,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 32),
               AppTextField(
                 label: 'Código de validación',
+                hint: 'Ingrese 6 dígitos',
                 controller: _otpController,
                 keyboardType: TextInputType.number,
-                validator: (v) =>
-                    v == null || v.isEmpty ? 'Ingrese el código' : null,
+                onChanged: (value) {
+                  final digitsOnly = value.replaceAll(RegExp(r'[^0-9]'), '');
+                  final normalized = digitsOnly.length > 6
+                      ? digitsOnly.substring(0, 6)
+                      : digitsOnly;
+
+                  if (normalized != value) {
+                    _otpController.value = TextEditingValue(
+                      text: normalized,
+                      selection: TextSelection.collapsed(
+                        offset: normalized.length,
+                      ),
+                    );
+                  }
+                },
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Ingrese el código';
+                  if (!RegExp(r'^[0-9]{6}$').hasMatch(v)) {
+                    return 'El código debe tener 6 dígitos';
+                  }
+                  return null;
+                },
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 24),
@@ -348,7 +432,7 @@ class _BottomActions extends StatelessWidget {
   final bool loading;
   final VoidCallback onPrev;
   final VoidCallback onBackToLogin;
-  final VoidCallback onNext;
+  final Future<void> Function() onNext;
   final Future<void> Function() onFinish;
 
   const _BottomActions({
@@ -378,11 +462,11 @@ class _BottomActions extends StatelessWidget {
             text: isLastStep ? 'Finalizar' : 'Siguiente',
             onPressed: loading
                 ? () {}
-                : () {
+                : () async {
                     if (isLastStep) {
-                      onFinish();
+                      await onFinish();
                     } else {
-                      onNext();
+                      await onNext();
                     }
                   },
           ),

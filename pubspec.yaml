@@ -36,11 +36,16 @@ dependencies:
   # Dio para peticiones HTTP
   flutter_dotenv: ^6.0.0
 
+  # Supabase
+  supabase_flutter: ^2.10.2
+
   # selector de país con su bandera y código
   intl_phone_field: ^3.2.0
 
   # Fuentes de google
   google_fonts: ^6.3.2
+
+
 
 dev_dependencies:
   flutter_test:
