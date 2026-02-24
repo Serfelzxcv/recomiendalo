@@ -1,20 +1,19 @@
+import 'package:recomiendalo/features/auth/factory/register_factory.dart';
+
 class RegisterModel {
-  final String fullName;
   final String email;
-  final String phone;
   final String password;
 
   RegisterModel({
-    required this.fullName,
     required this.email,
-    required this.phone,
     required this.password,
   });
 
-  Map<String, dynamic> toJson() => {
-        "fullName": fullName,
-        "email": email,
-        "phone": phone,
-        "password": password,
-      };
+  factory RegisterModel.fromJson(Map<String, dynamic> json) {
+    return RegisterFactory.fromJson(json);
+  }
+
+  Map<String, dynamic> toJson() {
+    return RegisterFactory.toJson(this);
+  }
 }

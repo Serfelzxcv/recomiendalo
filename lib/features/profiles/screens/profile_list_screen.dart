@@ -9,7 +9,7 @@ final mockProfiles = [
   ProfileModel(
     id: "1",
     userId: "u1",
-    name: "José Albañil",
+    fullName: "José Albañil",
     role: "Albañil",
     description: "Especialista en construcción y remodelación.",
     avatarUrl: null,
@@ -22,7 +22,7 @@ final mockProfiles = [
   ProfileModel(
     id: "2",
     userId: "u1",
-    name: "Ferretería San Juan",
+    fullName: "Ferretería San Juan",
     role: "Ferretería",
     description: "Herramientas y materiales de calidad.",
     avatarUrl: null,
@@ -55,10 +55,10 @@ class ProfileListScreen extends StatelessWidget {
                     ? NetworkImage(profile.avatarUrl!)
                     : null,
                 child: profile.avatarUrl == null
-                    ? Text(profile.name[0])
+                    ? Text(profile.fullName[0])
                     : null,
               ),
-              title: Text(profile.name),
+              title: Text(profile.fullName),
               subtitle: Row(
                 children: [
                   Text(profile.role),

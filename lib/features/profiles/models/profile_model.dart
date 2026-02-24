@@ -1,7 +1,7 @@
 class ProfileModel {
   final String id;
   final String userId;        // Relación con el dueño
-  final String name;          // Ej: "José Albañil", "Ferretería San Juan"
+  final String fullName;          // Ej: "José Albañil", "Ferretería San Juan"
   final String role;          // Ej: "Albañil", "Ferretería"
   final String description;   // Breve descripción
   final String? avatarUrl;    // Foto de perfil
@@ -11,7 +11,7 @@ class ProfileModel {
   ProfileModel({
     required this.id,
     required this.userId,
-    required this.name,
+    required this.fullName,
     required this.role,
     required this.description,
     this.avatarUrl,

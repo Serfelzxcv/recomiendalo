@@ -50,7 +50,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen>
                       ? NetworkImage(profile.avatarUrl!)
                       : null,
                   child: profile.avatarUrl == null
-                      ? Text(profile.name[0], style: const TextStyle(fontSize: 28))
+                      ? Text(profile.fullName[0], style: const TextStyle(fontSize: 28))
                       : null,
                 ),
                 const SizedBox(width: 16),
@@ -58,7 +58,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(profile.name, style: Theme.of(context).textTheme.titleLarge),
+                      Text(profile.fullName, style: Theme.of(context).textTheme.titleLarge),
                       Text(profile.role),
                       Row(
                         children: [

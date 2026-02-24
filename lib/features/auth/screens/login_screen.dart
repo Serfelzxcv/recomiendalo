@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:recomiendalo/core/theme/theme_mode_provider.dart';
 import 'package:recomiendalo/shared/widgets/app_scaffold.dart';
 import 'package:recomiendalo/shared/widgets/primary_button.dart';
 import 'package:recomiendalo/shared/widgets/secondary_button.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -17,7 +17,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  String _completePhoneNumber = '';
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
@@ -25,14 +25,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   void dispose() {
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
   bool get _canSubmit {
     final passwordOk = _passwordController.text.trim().length >= 6;
-    final phoneOk = _completePhoneNumber.trim().isNotEmpty;
-    return phoneOk && passwordOk && !_isSubmitting;
+    final emailOk = _emailController.text.trim().contains('@');
+    return emailOk && passwordOk && !_isSubmitting;
   }
 
   Future<void> _submit() async {
@@ -44,12 +45,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     setState(() => _isSubmitting = true);
     try {
-      // TODO: llama tu login real aquí.
-      // Evita imprimir contraseñas en logs.
-      // debugPrint('📞 $_completePhoneNumber');
+      await Supabase.instance.client.auth.signInWithPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
 
       if (!mounted) return;
       context.go('/home');
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo iniciar sesión')),
+      );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -155,45 +167,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              IntlPhoneField(
-                                style: TextStyle(
-                                  color: colors.onSurface,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                cursorColor: colors.primary,
+                              TextFormField(
+                                controller: _emailController,
+                                textInputAction: TextInputAction.next,
+                                keyboardType: TextInputType.emailAddress,
+                                autofillHints: const [AutofillHints.email],
+                                onChanged: (_) => setState(() {}),
                                 decoration: InputDecoration(
-                                  labelText: 'Número de celular',
-                                  prefixIcon: const Icon(
-                                    Icons.phone_android_rounded,
-                                  ),
+                                  labelText: 'Correo electrónico',
+                                  prefixIcon: const Icon(Icons.email_outlined),
                                   filled: true,
                                   fillColor: colors.primary.withValues(
                                     alpha: 0.04,
                                   ),
                                 ),
-                                initialCountryCode: 'PE',
-                                dropdownTextStyle: TextStyle(
-                                  color: colors.onSurface,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                onChanged: (phone) {
-                                  setState(() {
-                                    _completePhoneNumber = phone.completeNumber;
-                                  });
-                                },
-                                validator: (phone) {
-                                  // IntlPhoneField puede pasar valores null
-                                  final value = phone?.completeNumber ?? '';
-                                  if (value.trim().isEmpty) {
-                                    return 'Ingresa tu número de celular';
+                                validator: (value) {
+                                  final v = (value ?? '').trim();
+                                  if (v.isEmpty) {
+                                    return 'Ingresa tu correo electrónico';
                                   }
-                                  // validación ligera (no perfecta, pero útil)
-                                  if (value
-                                          .replaceAll(RegExp(r'\D'), '')
-                                          .length <
-                                      9) {
-                                    return 'Número inválido';
-                                  }
+                                  if (!v.contains('@')) return 'Correo inválido';
                                   return null;
                                 },
                               ),
@@ -238,7 +231,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                               const SizedBox(height: 20),
                               PrimaryButton(
-                                text: _isSubmitting ? 'Entrando...' : 'Entrar',
+                                text: _isSubmitting
+                                    ? 'Ingresando...'
+                                    : 'Ingresar',
                                 onPressed: _canSubmit ? _submit : null,
                                 loading: _isSubmitting,
                               ),

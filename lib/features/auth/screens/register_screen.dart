@@ -48,15 +48,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     setState(() => _loading = true);
     try {
-      final fullName =
-          '${_nameController.text.trim()} ${_lastnameController.text.trim()}';
+      final fullName = '${_nameController.text.trim()} ${_lastnameController.text.trim()}';
       await Supabase.instance.client.auth.signUp(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+        email    : _emailController.text.trim(),
+        password : _passwordController.text.trim(),
         data: {
           'full_name': fullName,
-          'first_name': _nameController.text.trim(),
-          'last_name': _lastnameController.text.trim(),
           'phone': _phoneController.text.trim(),
         },
       );

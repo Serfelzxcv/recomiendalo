@@ -12,7 +12,7 @@ class ProfileInfoSection extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       children: [
         Text(
-          "Sobre ${profile.name}",
+          "Sobre ${profile.fullName}",
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 8),

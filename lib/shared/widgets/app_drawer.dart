@@ -6,6 +6,42 @@ import 'package:recomiendalo/shared/models/user_mode.dart';
 import 'package:recomiendalo/shared/providers/user_mode_provider.dart';
 import 'package:recomiendalo/core/router/app_routes.dart';
 import 'package:recomiendalo/shared/widgets/dialogs/switching_mode_dialog.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+final drawerUserInfoProvider = FutureProvider<_DrawerUserInfo>((ref) async {
+  final client = Supabase.instance.client;
+  final user = client.auth.currentUser;
+
+  if (user == null) {
+    return const _DrawerUserInfo(name: 'Usuario', email: '');
+  }
+
+  final row = await client
+      .from('person')
+      .select('full_name')
+      .eq('id', user.id)
+      .maybeSingle();
+
+  final fullName = row?['full_name']?.toString().trim();
+  final name = (fullName != null && fullName.isNotEmpty)
+      ? fullName
+      : (user.userMetadata?['full_name']?.toString() ?? 'Usuario');
+
+  return _DrawerUserInfo(
+    name: name,
+    email: user.email ?? '',
+  );
+});
+
+class _DrawerUserInfo {
+  final String name;
+  final String email;
+
+  const _DrawerUserInfo({
+    required this.name,
+    required this.email,
+  });
+}
 
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({super.key});
@@ -16,6 +52,7 @@ class AppDrawer extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     final modeState = ref.watch(userModeProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final userInfoAsync = ref.watch(drawerUserInfoProvider);
     final isDark = themeMode == ThemeMode.dark;
 
     final mode = modeState.value ?? UserMode.employer;
@@ -52,14 +89,14 @@ class AppDrawer extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Usuario Demo',
+                          userInfoAsync.value?.name ?? 'Cargando...',
                           style: textTheme.titleMedium?.copyWith(
                             color: colors.onSurface,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          'demo@correo.com',
+                          userInfoAsync.value?.email ?? '',
                           style: textTheme.bodySmall?.copyWith(
                             color: colors.onSurface.withValues(alpha: 0.65),
                           ),
