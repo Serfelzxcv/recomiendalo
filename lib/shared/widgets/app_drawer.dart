@@ -288,6 +288,12 @@ class AppDrawer extends ConsumerWidget {
                     icon: Icons.logout,
                     title: 'Cerrar sesión',
                     route: AppRoutes.login,
+                    onTap: () async {
+                      await Supabase.instance.client.auth.signOut();
+                      if (!context.mounted) return;
+                      Navigator.pop(context);
+                      context.go(AppRoutes.login);
+                    },
                   ),
                 ],
               ),
@@ -357,6 +363,7 @@ class AppDrawer extends ConsumerWidget {
     required IconData icon,
     required String title,
     required String route,
+    Future<void> Function()? onTap,
     int? badgeCount,
   }) {
     final colors = Theme.of(context).colorScheme;
@@ -397,7 +404,11 @@ class AppDrawer extends ConsumerWidget {
           fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
         ),
       ),
-      onTap: () {
+      onTap: () async {
+        if (onTap != null) {
+          await onTap();
+          return;
+        }
         Navigator.pop(context);
         final current = GoRouterState.of(context).uri.toString();
         if (current != route) context.go(route);

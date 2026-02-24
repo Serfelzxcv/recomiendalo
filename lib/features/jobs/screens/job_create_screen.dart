@@ -14,6 +14,7 @@ import 'package:recomiendalo/shared/widgets/app_drawer.dart';
 import 'package:recomiendalo/shared/widgets/inputs/app_tags_input.dart';
 import 'package:recomiendalo/shared/providers/user_mode_provider.dart';
 import 'package:recomiendalo/shared/widgets/secondary_button.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class JobCreateScreen extends ConsumerStatefulWidget {
   const JobCreateScreen({super.key});
@@ -35,6 +36,7 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
   bool _isRemote = false;
   List<File> _images = [];
   List<String> _tags = [];
+  bool _isPublishing = false;
 
   void _nextStep() {
     if (_step < 2) setState(() => _step++);
@@ -42,6 +44,109 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
 
   void _prevStep() {
     if (_step > 0) setState(() => _step--);
+  }
+
+  String? _validateStep(int step) {
+    if (step == 0) {
+      if (_titleController.text.trim().isEmpty) return 'Ingresa un título';
+      if (_descriptionController.text.trim().isEmpty) {
+        return 'Ingresa una descripción';
+      }
+      if ((_category ?? '').trim().isEmpty) return 'Selecciona una categoría';
+    }
+    if (step == 1 && !_isRemote && _locationController.text.trim().isEmpty) {
+      return 'Ingresa una ubicación o marca trabajo remoto';
+    }
+    return null;
+  }
+
+  Future<void> _handleMainAction() async {
+    if (_isPublishing) return;
+
+    final validationError = _validateStep(_step);
+    if (validationError != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(validationError)));
+      return;
+    }
+
+    if (_step < 2) {
+      _nextStep();
+      return;
+    }
+
+    await _publishJob();
+  }
+
+  Future<void> _publishJob() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Debes iniciar sesión para publicar')),
+      );
+      return;
+    }
+
+    final budgetText = _budgetController.text.trim();
+    final normalizedBudget = budgetText.replaceAll(',', '.');
+    final parsedBudget = normalizedBudget.isEmpty
+        ? null
+        : double.tryParse(normalizedBudget);
+
+    if (budgetText.isNotEmpty && parsedBudget == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Presupuesto inválido')),
+      );
+      return;
+    }
+
+    final now = DateTime.now().toUtc().toIso8601String();
+
+    setState(() => _isPublishing = true);
+    try {
+      await Supabase.instance.client.from('jobs').insert({
+        'person_id': user.id,
+        'title': _titleController.text.trim(),
+        'description': _descriptionController.text.trim(),
+        'category': (_category ?? '').trim(),
+        'location': _isRemote ? '' : _locationController.text.trim(),
+        'budget': parsedBudget,
+        'payment_method': _paymentMethod,
+        'is_remote': _isRemote,
+        'tags': _tags,
+        'images': const <String>[],
+        'created_at': now,
+        'updated_at': now,
+      });
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Trabajo publicado correctamente')),
+      );
+      context.pop();
+    } on PostgrestException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al publicar el trabajo')),
+      );
+    } finally {
+      if (mounted) setState(() => _isPublishing = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _budgetController.dispose();
+    _locationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -97,21 +202,11 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
                 if (_step > 0) const SizedBox(width: 12),
                 Expanded(
                   child: SecondaryButton(
-                    text: _step < 2 ? 'Siguiente' : 'Publicar',
-                    onPressed: () {
-                      if (_step < 2) {
-                        _nextStep();
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Trabajo publicado: ${_titleController.text}',
-                            ),
-                          ),
-                        );
-                        context.pop();
-                      }
-                    },
+                    text: _isPublishing
+                        ? 'Publicando...'
+                        : (_step < 2 ? 'Siguiente' : 'Publicar'),
+                    onPressed: _isPublishing ? null : _handleMainAction,
+                    loading: _isPublishing,
                   ),
                 ),
               ],
