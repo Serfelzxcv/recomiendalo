@@ -6,11 +6,12 @@ import 'package:recomiendalo/shared/models/user_mode.dart';
 import 'package:recomiendalo/shared/providers/user_mode_provider.dart';
 import 'package:recomiendalo/core/router/app_routes.dart';
 import 'package:recomiendalo/shared/widgets/dialogs/switching_mode_dialog.dart';
+import 'package:recomiendalo/shared/providers/auth_user_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-final drawerUserInfoProvider = FutureProvider<_DrawerUserInfo>((ref) async {
+final drawerUserInfoProvider =
+    FutureProvider.autoDispose.family<_DrawerUserInfo, User?>((ref, user) async {
   final client = Supabase.instance.client;
-  final user = client.auth.currentUser;
 
   if (user == null) {
     return const _DrawerUserInfo(name: 'Usuario', email: '');
@@ -52,7 +53,8 @@ class AppDrawer extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     final modeState = ref.watch(userModeProvider);
     final themeMode = ref.watch(themeModeProvider);
-    final userInfoAsync = ref.watch(drawerUserInfoProvider);
+    final currentUser = ref.watch(currentUserProvider);
+    final userInfoAsync = ref.watch(drawerUserInfoProvider(currentUser));
     final isDark = themeMode == ThemeMode.dark;
 
     final mode = modeState.value ?? UserMode.employer;
@@ -290,6 +292,7 @@ class AppDrawer extends ConsumerWidget {
                     route: AppRoutes.login,
                     onTap: () async {
                       await Supabase.instance.client.auth.signOut();
+                      ref.read(userModeProvider.notifier).reset();
                       if (!context.mounted) return;
                       Navigator.pop(context);
                       context.go(AppRoutes.login);

@@ -18,4 +18,8 @@ class UserModeNotifier extends AsyncNotifier<UserMode> {
 
     state = AsyncData(next);
   }
+
+  void reset() {
+    state = const AsyncData(UserMode.employer);
+  }
 }

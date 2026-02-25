@@ -4,11 +4,15 @@ import 'package:recomiendalo/features/jobs/models/job_model.dart';
 class JobCardMaker extends StatelessWidget {
   final JobModel job;
   final int messageCount;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   const JobCardMaker({
     super.key,
     required this.job,
     this.messageCount = 0,
+    this.onEdit,
+    this.onDelete,
   });
 
   @override
@@ -19,13 +23,13 @@ class JobCardMaker extends StatelessWidget {
     // 👇 Mostrar presupuesto o "A convenir"
     String budgetText;
     if (job.budget != null && job.budget! > 0) {
-      budgetText = "S/ ${job.budget!.toStringAsFixed(1)}";
+      budgetText = 'S/ ${job.budget!.toStringAsFixed(1)}';
     } else {
-      budgetText = "A convenir";
+      budgetText = 'A convenir';
     }
 
     // 👇 Mostrar ubicación o remoto
-    final locationText = job.isRemote ? "Remoto" : job.location;
+    final locationText = job.isRemote ? 'Remoto' : job.location;
 
     return Card(
       elevation: 1,
@@ -100,6 +104,22 @@ class JobCardMaker extends StatelessWidget {
                   style: textTheme.bodySmall?.copyWith(
                     color: Colors.grey[600],
                   ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  tooltip: 'Editar trabajo',
+                  onPressed: onEdit,
+                  icon: const Icon(Icons.edit_outlined),
+                ),
+                IconButton(
+                  tooltip: 'Eliminar trabajo',
+                  onPressed: onDelete,
+                  icon: const Icon(Icons.delete_outline),
                 ),
               ],
             ),

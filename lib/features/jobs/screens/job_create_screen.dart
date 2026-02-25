@@ -15,9 +15,12 @@ import 'package:recomiendalo/shared/widgets/inputs/app_tags_input.dart';
 import 'package:recomiendalo/shared/providers/user_mode_provider.dart';
 import 'package:recomiendalo/shared/widgets/secondary_button.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:recomiendalo/features/jobs/models/job_model.dart';
 
 class JobCreateScreen extends ConsumerStatefulWidget {
-  const JobCreateScreen({super.key});
+  final JobModel? jobToEdit;
+
+  const JobCreateScreen({super.key, this.jobToEdit});
 
   @override
   ConsumerState<JobCreateScreen> createState() => _JobCreateScreenState();
@@ -35,8 +38,27 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
   String? _paymentMethod;
   bool _isRemote = false;
   List<File> _images = [];
+  List<String> _existingImages = [];
   List<String> _tags = [];
   bool _isPublishing = false;
+  bool get _isEditing => widget.jobToEdit != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final job = widget.jobToEdit;
+    if (job == null) return;
+
+    _titleController.text = job.title;
+    _descriptionController.text = job.description;
+    _budgetController.text = job.budget?.toString() ?? '';
+    _locationController.text = job.location;
+    _category = job.category;
+    _paymentMethod = job.paymentMethod;
+    _isRemote = job.isRemote;
+    _tags = List<String>.from(job.tags);
+    _existingImages = List<String>.from(job.images);
+  }
 
   void _nextStep() {
     if (_step < 2) setState(() => _step++);
@@ -76,14 +98,20 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
       return;
     }
 
-    await _publishJob();
+    await _saveJob();
   }
 
-  Future<void> _publishJob() async {
+  Future<void> _saveJob() async {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Debes iniciar sesión para publicar')),
+        SnackBar(
+          content: Text(
+            _isEditing
+                ? 'Debes iniciar sesión para editar'
+                : 'Debes iniciar sesión para publicar',
+          ),
+        ),
       );
       return;
     }
@@ -105,8 +133,12 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
 
     setState(() => _isPublishing = true);
     try {
-      await Supabase.instance.client.from('jobs').insert({
-        'person_id': user.id,
+      final imagePaths = [
+        ..._existingImages,
+        ..._images.map((file) => file.path),
+      ];
+
+      final payload = {
         'title': _titleController.text.trim(),
         'description': _descriptionController.text.trim(),
         'category': (_category ?? '').trim(),
@@ -115,14 +147,33 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
         'payment_method': _paymentMethod,
         'is_remote': _isRemote,
         'tags': _tags,
-        'images': const <String>[],
-        'created_at': now,
+        'images': imagePaths,
         'updated_at': now,
-      });
+      };
+
+      if (_isEditing) {
+        await Supabase.instance.client
+            .from('jobs')
+            .update(payload)
+            .eq('id', widget.jobToEdit!.id)
+            .eq('person_id', user.id);
+      } else {
+        await Supabase.instance.client.from('jobs').insert({
+          'person_id': user.id,
+          ...payload,
+          'created_at': now,
+        });
+      }
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Trabajo publicado correctamente')),
+        SnackBar(
+          content: Text(
+            _isEditing
+                ? 'Trabajo actualizado correctamente'
+                : 'Trabajo publicado correctamente',
+          ),
+        ),
       );
       context.pop();
     } on PostgrestException catch (e) {
@@ -133,7 +184,13 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al publicar el trabajo')),
+        SnackBar(
+          content: Text(
+            _isEditing
+                ? 'Error al editar el trabajo'
+                : 'Error al publicar el trabajo',
+          ),
+        ),
       );
     } finally {
       if (mounted) setState(() => _isPublishing = false);
@@ -161,10 +218,12 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
     if (mode == UserMode.colaborator) {
       return AppScaffold(
         drawer: const AppDrawer(),
-        appBar: AppBar(title: const Text("Publicar trabajo")),
+        appBar: AppBar(
+          title: Text(_isEditing ? 'Editar trabajo' : 'Publicar trabajo'),
+        ),
         body: const Center(
           child: Text(
-            "⚠️ Solo los empleadores pueden publicar trabajos",
+            '⚠️ Solo los empleadores pueden publicar trabajos',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
@@ -174,7 +233,9 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
     // ✅ Flujo normal para empleadores
     return AppScaffold(
       drawer: const AppDrawer(),
-      appBar: AppBar(title: const Text('Publicar trabajo')),
+      appBar: AppBar(
+        title: Text(_isEditing ? 'Editar trabajo' : 'Publicar trabajo'),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
@@ -203,8 +264,10 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
                 Expanded(
                   child: SecondaryButton(
                     text: _isPublishing
-                        ? 'Publicando...'
-                        : (_step < 2 ? 'Siguiente' : 'Publicar'),
+                        ? (_isEditing ? 'Guardando...' : 'Publicando...')
+                        : (_step < 2
+                              ? 'Siguiente'
+                              : (_isEditing ? 'Actualizar' : 'Publicar')),
                     onPressed: _isPublishing ? null : _handleMainAction,
                     loading: _isPublishing,
                   ),
@@ -266,7 +329,8 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
 
               AppTagsInput(
                 label: 'Etiquetas del trabajo',
-                initialTags: const [],
+                key: ValueKey(_isEditing ? widget.jobToEdit!.id : 'new-job'),
+                initialTags: _tags,
                 onChanged: (tags) => setState(() => _tags = tags),
               ),
             ],
@@ -337,8 +401,13 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
 
               AppImagePicker(
                 label: 'Imágenes de referencia (opcional)',
-                onImagesSelected: (files) {
-                  setState(() => _images = files);
+                initialImages: _existingImages,
+                key: ValueKey(_isEditing ? 'img-${widget.jobToEdit!.id}' : 'img-new'),
+                onImagesSelected: (files, existingImages) {
+                  setState(() {
+                    _images = files;
+                    _existingImages = existingImages;
+                  });
                 },
               ),
             ],
@@ -393,23 +462,31 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
               ),
               const SizedBox(height: 8),
 
-              if (_images.isEmpty)
+              if (_images.isEmpty && _existingImages.isEmpty)
                 Text('Sin imágenes', style: t.bodyMedium)
               else
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
-                  children: _images.map((file) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        file,
-                        width: 80,
-                        height: 80,
-                        fit: BoxFit.cover,
+                  children: [
+                    ..._existingImages.map(
+                      (image) => ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: _buildImagePreview(image),
                       ),
-                    );
-                  }).toList(),
+                    ),
+                    ..._images.map(
+                      (file) => ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.file(
+                          file,
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
               const SizedBox(height: 12),
@@ -425,6 +502,28 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
           ),
         );
     }
+  }
+
+  Widget _buildImagePreview(String path) {
+    final isRemote =
+        path.startsWith('http://') || path.startsWith('https://');
+    if (isRemote) {
+      return Image.network(
+        path,
+        width: 80,
+        height: 80,
+        fit: BoxFit.cover,
+        errorBuilder: (_, error, stackTrace) => const _BrokenImage(),
+      );
+    }
+
+    return Image.file(
+      File(path),
+      width: 80,
+      height: 80,
+      fit: BoxFit.cover,
+      errorBuilder: (_, error, stackTrace) => const _BrokenImage(),
+    );
   }
 }
 
@@ -515,6 +614,24 @@ class _SummaryItem extends StatelessWidget {
           const SizedBox(height: 4),
           Text(value.isEmpty ? '—' : value, style: t.bodyMedium),
         ],
+      ),
+    );
+  }
+}
+
+class _BrokenImage extends StatelessWidget {
+  const _BrokenImage();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 80,
+      height: 80,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      alignment: Alignment.center,
+      child: Icon(
+        Icons.broken_image_outlined,
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
       ),
     );
   }
