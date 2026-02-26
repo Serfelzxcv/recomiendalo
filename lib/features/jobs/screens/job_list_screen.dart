@@ -113,7 +113,7 @@ class _JobListScreenState extends State<JobListScreen> {
     return AppScaffold(
       drawer: const AppDrawer(), // 👈 ahora es global con Riverpod
       appBar: AppBar(
-        title: const Text('Trabajos publicados'),
+        title: const Text('Mis trabajos publicados'),
       ),
       body: FutureBuilder<List<JobModel>>(
         future: _jobsFuture,

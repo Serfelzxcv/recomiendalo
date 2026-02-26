@@ -31,7 +31,7 @@ class JobModel {
     this.budget,
     this.paymentMethod,
     this.isRemote = false,
-    this.tags = const [],
+    this.tags   = const [],
     this.images = const [],
     required this.createdAt,
     required this.updatedAt,

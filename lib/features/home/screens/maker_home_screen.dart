@@ -11,7 +11,7 @@ class MakerHomeScreen extends StatelessWidget {
       crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
       children: const [
         AppCard(title: 'Publicar trabajo', icon: Icons.add_box_outlined),
-        AppCard(title: 'Trabajos publicados', icon: Icons.work_outline),
+        AppCard(title: 'Mis trabajos publicados', icon: Icons.work_outline),
       ],
     );
   }

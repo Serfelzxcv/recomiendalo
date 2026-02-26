@@ -11,7 +11,7 @@ class TakerHomeScreen extends StatelessWidget {
       crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
       children: const [
         AppCard(title: 'Mis servicios', icon: Icons.build_outlined),
-        AppCard(title: 'Mis ofertas', icon: Icons.local_offer_outlined),
+        AppCard(title: 'Mis propuestas', icon: Icons.local_offer_outlined),
       ],
     );
   }

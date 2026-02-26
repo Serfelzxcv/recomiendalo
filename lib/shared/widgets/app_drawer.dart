@@ -147,7 +147,7 @@ class AppDrawer extends ConsumerWidget {
                     _buildTile(
                       context,
                       icon: Icons.work_outline,
-                      title: 'Trabajos publicados',
+                      title: 'Mis trabajos publicados',
                       route: AppRoutes.jobsList,
                       badgeCount: 2,
                     ),
@@ -173,7 +173,7 @@ class AppDrawer extends ConsumerWidget {
                     _buildTile(
                       context,
                       icon: Icons.local_offer_outlined,
-                      title: 'Mis ofertas',
+                      title: 'Mis propuestas',
                       route: AppRoutes.myOffers,
                       badgeCount: 1,
                     ),
@@ -371,7 +371,7 @@ class AppDrawer extends ConsumerWidget {
   }) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final currentLocation = GoRouterState.of(context).uri.toString();
+    final currentLocation = _safeCurrentLocation(context);
     final bool isSelected =
         currentLocation == route || currentLocation.startsWith(route);
 
@@ -413,9 +413,25 @@ class AppDrawer extends ConsumerWidget {
           return;
         }
         Navigator.pop(context);
-        final current = GoRouterState.of(context).uri.toString();
+        final current = _safeCurrentLocation(context);
         if (current != route) context.go(route);
       },
     );
+  }
+
+  String _safeCurrentLocation(BuildContext context) {
+    try {
+      return GoRouterState.of(context).uri.toString();
+    } catch (_) {
+      try {
+        return GoRouter.of(context)
+            .routeInformationProvider
+            .value
+            .uri
+            .toString();
+      } catch (_) {
+        return '';
+      }
+    }
   }
 }

@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 class AppImagePicker extends StatefulWidget {
   final String label;
   final List<String> initialImages;
+  final Map<String, String> signedImageUrls;
   final void Function(List<File> files, List<String> existingImages)
   onImagesSelected;
 
@@ -12,6 +13,7 @@ class AppImagePicker extends StatefulWidget {
     super.key,
     required this.label,
     this.initialImages = const [],
+    this.signedImageUrls = const {},
     required this.onImagesSelected,
   });
 
@@ -85,15 +87,22 @@ class _AppImagePickerState extends State<AppImagePicker> {
           runSpacing: 8,
           children: [
             ..._existingImages.map((image) {
-              final isRemote = image.startsWith('http://') ||
-                  image.startsWith('https://');
+              final signed = widget.signedImageUrls[image];
+              final imageSource = (signed != null && signed.isNotEmpty)
+                  ? signed
+                  : image;
+              final isRemote =
+                  image.startsWith('http://') ||
+                  image.startsWith('https://') ||
+                  imageSource.startsWith('http://') ||
+                  imageSource.startsWith('https://');
               return Stack(
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: isRemote
                         ? Image.network(
-                            image,
+                            imageSource,
                             width: 80,
                             height: 80,
                             fit: BoxFit.cover,

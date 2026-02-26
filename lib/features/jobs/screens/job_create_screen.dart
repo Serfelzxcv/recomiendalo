@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:recomiendalo/shared/models/user_mode.dart';
+import 'package:recomiendalo/core/router/app_routes.dart';
 
 import 'package:recomiendalo/shared/widgets/app_scaffold.dart';
 import 'package:recomiendalo/shared/widgets/primary_button.dart';
@@ -27,6 +28,8 @@ class JobCreateScreen extends ConsumerStatefulWidget {
 }
 
 class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
+  static const String _jobsImagesBucket = 'private_images';
+
   int _step = 0;
 
   final _titleController = TextEditingController();
@@ -39,6 +42,7 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
   bool _isRemote = false;
   List<File> _images = [];
   List<String> _existingImages = [];
+  Map<String, String> _signedImageUrls = {};
   List<String> _tags = [];
   bool _isPublishing = false;
   bool get _isEditing => widget.jobToEdit != null;
@@ -58,6 +62,62 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
     _isRemote = job.isRemote;
     _tags = List<String>.from(job.tags);
     _existingImages = List<String>.from(job.images);
+    Future.microtask(_refreshExistingImagePreviews);
+  }
+
+  Future<void> _refreshExistingImagePreviews() async {
+    if (_existingImages.isEmpty) {
+      if (!mounted) return;
+      setState(() => _signedImageUrls = {});
+      return;
+    }
+
+    final storage = Supabase.instance.client.storage.from(_jobsImagesBucket);
+    final signedUrls = <String, String>{};
+
+    for (final imagePath in _existingImages) {
+      final trimmed = imagePath.trim();
+      if (trimmed.isEmpty) continue;
+
+      final isRemote =
+          trimmed.startsWith('http://') || trimmed.startsWith('https://');
+      if (isRemote) {
+        signedUrls[trimmed] = trimmed;
+        continue;
+      }
+
+      try {
+        final signedUrl = await storage.createSignedUrl(trimmed, 60 * 60);
+        signedUrls[trimmed] = signedUrl;
+      } catch (_) {
+        // Si la ruta no existe o no se puede firmar, se ignora en preview.
+      }
+    }
+
+    if (!mounted) return;
+    setState(() => _signedImageUrls = signedUrls);
+  }
+
+  String _buildStoragePath({required String userId, required File file}) {
+    final fileName = file.path.split('/').last;
+    final safeName = fileName.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
+    final now = DateTime.now().millisecondsSinceEpoch;
+    return 'jobs/$userId/$now-$safeName';
+  }
+
+  Future<List<String>> _uploadNewImages(String userId) async {
+    if (_images.isEmpty) return const [];
+
+    final storage = Supabase.instance.client.storage.from(_jobsImagesBucket);
+    final uploadedPaths = <String>[];
+
+    for (final file in _images) {
+      final path = _buildStoragePath(userId: userId, file: file);
+      await storage.upload(path, file, fileOptions: const FileOptions());
+      uploadedPaths.add(path);
+    }
+
+    return uploadedPaths;
   }
 
   void _nextStep() {
@@ -123,9 +183,9 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
         : double.tryParse(normalizedBudget);
 
     if (budgetText.isNotEmpty && parsedBudget == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Presupuesto inválido')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Presupuesto inválido')));
       return;
     }
 
@@ -133,10 +193,8 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
 
     setState(() => _isPublishing = true);
     try {
-      final imagePaths = [
-        ..._existingImages,
-        ..._images.map((file) => file.path),
-      ];
+      final uploadedImagePaths = await _uploadNewImages(user.id);
+      final imagePaths = [..._existingImages, ...uploadedImagePaths];
 
       final payload = {
         'title': _titleController.text.trim(),
@@ -175,13 +233,28 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
           ),
         ),
       );
-      context.pop();
-    } on PostgrestException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
+      context.go(AppRoutes.home);
+    } on StorageException catch (e, st) {
+      debugPrint(
+        '[JobCreateScreen._saveJob][StorageException] message=${e.message} statusCode=${e.statusCode} error=${e.error}',
       );
-    } catch (_) {
+      debugPrintStack(stackTrace: st);
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error al subir imágenes: ${e.message}')));
+    } on PostgrestException catch (e, st) {
+      debugPrint(
+        '[JobCreateScreen._saveJob][PostgrestException] message=${e.message} code=${e.code} details=${e.details} hint=${e.hint}',
+      );
+      debugPrintStack(stackTrace: st);
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e, st) {
+      debugPrint('[JobCreateScreen._saveJob][Exception] $e');
+      debugPrintStack(stackTrace: st);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -400,14 +473,18 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
               const SizedBox(height: 28),
 
               AppImagePicker(
-                label: 'Imágenes de referencia (opcional)',
+                label: 'Selecciona una o más imágenes de referencia (opcional)',
                 initialImages: _existingImages,
-                key: ValueKey(_isEditing ? 'img-${widget.jobToEdit!.id}' : 'img-new'),
+                signedImageUrls: _signedImageUrls,
+                key: ValueKey(
+                  _isEditing ? 'img-${widget.jobToEdit!.id}' : 'img-new',
+                ),
                 onImagesSelected: (files, existingImages) {
                   setState(() {
                     _images = files;
                     _existingImages = existingImages;
                   });
+                  _refreshExistingImagePreviews();
                 },
               ),
             ],
@@ -505,8 +582,18 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
   }
 
   Widget _buildImagePreview(String path) {
-    final isRemote =
-        path.startsWith('http://') || path.startsWith('https://');
+    final signed = _signedImageUrls[path];
+    if (signed != null && signed.isNotEmpty) {
+      return Image.network(
+        signed,
+        width: 80,
+        height: 80,
+        fit: BoxFit.cover,
+        errorBuilder: (_, error, stackTrace) => const _BrokenImage(),
+      );
+    }
+
+    final isRemote = path.startsWith('http://') || path.startsWith('https://');
     if (isRemote) {
       return Image.network(
         path,
@@ -515,6 +602,10 @@ class _JobCreateScreenState extends ConsumerState<JobCreateScreen> {
         fit: BoxFit.cover,
         errorBuilder: (_, error, stackTrace) => const _BrokenImage(),
       );
+    }
+
+    if (!File(path).existsSync()) {
+      return const _BrokenImage();
     }
 
     return Image.file(
